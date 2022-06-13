@@ -2,7 +2,7 @@ import React from 'react';
 import './style.css';
 // import {useEffect,useState} from 'react';
 
-const Dashboard = () => {
+const Dashboard = ( {login, role} ) => {
    
 //    const[record,setRecord] = useState([])
  
@@ -17,7 +17,7 @@ const Dashboard = () => {
 //       getData();
 //    },)
     
- 
+    if(login && role==="ADMIN")
     return (
     <div class="col main pt-5 mt-3">
         <div class="row mb-3">
@@ -54,6 +54,10 @@ const Dashboard = () => {
         </div>
     </div>
     )
+    else
+        return(
+            <p>Not allowed</p>
+        )
 }
  
 export default Dashboard;

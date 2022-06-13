@@ -163,8 +163,8 @@ const App = ({ setLoginUser }) => {
               <Route path="/Sidebar" exact>
                 <div class="container-fluid" id="main">
                   <div class="row row-offcanvas row-offcanvas-left">
-                    <Sidebar/>
-                    <Dashboard/>
+                    <Sidebar login={login} role={role}/>
+                    <Dashboard login={login} role={role}/>
                   </div>
                 </div>
               </Route>

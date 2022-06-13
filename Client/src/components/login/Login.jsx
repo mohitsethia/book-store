@@ -29,7 +29,7 @@ const Login = ({ login, setLogin,setRole,setUserName }) => {
       setRole(localStorage.getItem("role"))
       setUserName(response.data.name)
       if(response.data.role==="ADMIN") {
-        history.push("/admin");
+        history.push("/sidebar");
       } else {
         history.push("/");
       }
