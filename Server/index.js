@@ -189,24 +189,35 @@ app.get("/getBooksByCategory", (req, res) => {
   });
 });
 
-app.post("delete/:id", (req, res) => {
+app.delete("/delete/:id", (req, res) => {
+  const id = req.params.id;
   Book.deleteOne({_id: id}, function(err){
     if(err){
 			res.send(err);
 		}
 		else{
-			res.send(200).redirect("/");
+			res.send(200);
 		}
   })
 });
 
-app.post("update/:id", (req, res) => {
-  Book.updateOne({_id: id}, function(err){
+app.patch("/update/:id", (req, res) => {
+  const id = req.params.id;
+  const { name, description, price, author, media,category } = req.body;
+  const book = { $set: {
+    "name": name,
+    "description": description,
+    "price": price,
+    "author": author,
+    "media": media,
+    "category": category
+  }};
+  Book.updateOne({_id: id}, book, function(err){
     if(err){
-			res.sendStatus(500);
+			res.send(500);
 		}
 		else{
-			res.status(200).redirect("/");
+			res.send(200);
 		}
   })
 });
