@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import useStyles from './styles';
 
 
-const Product = ({product, onAddToCart}) => {
+const Product = ({product, onAddToCart, login}) => {
+    console.log({product})
     const classes = useStyles();
     return (
         <Card className={classes.root}>
@@ -24,11 +25,14 @@ const Product = ({product, onAddToCart}) => {
             </Typography>
           </div>
         </CardContent>
+        {!login && (
         <CardActions disableSpacing className={classes.cardActions}>
           <Button variant="contained" className={classes.button} endIcon={<AddShoppingCart />} onClick={() => onAddToCart(product._id, 1)} >
             <b>ADD TO CART</b>
           </Button>
         </CardActions>
+
+        )}
         </Card>
     )
 }

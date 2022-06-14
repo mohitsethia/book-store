@@ -64,7 +64,7 @@ const Products = ({ products, onAddToCart }) => {
               color="primary"
               href="#foot"
             >
-              Other Works
+              About Us
             </Button>
           </Carousel.Caption>
         </Carousel.Item>

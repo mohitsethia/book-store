@@ -16,7 +16,7 @@ const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
   const classes = useStyles();
   const location = useLocation();
   console.log(role);
-
+  console.log(userName);
   return (
     <div>
       <AppBar position="fixed" className={classes.appBar} color="inherit">
@@ -50,16 +50,7 @@ const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
                 Register
               </Link>
             )}
-            {login && (
-              <button
-                onClick={() => {
-                  setLogin(false);
-                  localStorage.removeItem("token");
-                }}
-              >
-                Logout
-              </button>
-            )}
+            
             {login && role === "ADMIN" && (
               <Link className={classes.link} to="/Admin">
                 Admin
@@ -70,7 +61,20 @@ const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
                 {userName}
               </Link>
             )}
-            <IconButton
+            {login && (
+              <button className={classes.log}
+                onClick={() => {
+                  setLogin(false);
+                  localStorage.removeItem("token");
+                }}
+              >
+                <Link className={classes.log} to="/">
+                  Logout 
+                </Link>
+              </button>
+            )}
+            {login && role==="CUSTOMER" && (
+              <IconButton
               component={Link}
               to="/cart"
               aria-label="Show cart items"
@@ -80,6 +84,7 @@ const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
                 <ShoppingCart />
               </Badge>
             </IconButton>
+            )}
           </div>
         </Toolbar>
       </AppBar>

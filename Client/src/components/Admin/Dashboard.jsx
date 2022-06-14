@@ -19,17 +19,17 @@ const Dashboard = ( {login, role} ) => {
     
     if(login && role==="ADMIN")
     return (
-    <div class="col main pt-5 mt-3">
+    <div class="col main pt-5 mt-5">
         <div class="row mb-3">
-            <h1>Admin Dashboard</h1>
+            <h1><strong>Admin Dashboard</strong></h1>
             <div class="col-xl-3 col-sm-6 py-2">
                 <div class="card bg-success text-white h-100">
-                    <a class='dash' href="/Admin">
+                    <a class='dash' href="/Userlist">
                         <div class="card-body bg-success" style={{backgroundColor:"#57b960"}}>
                             <div class="rotate">
                                 <i class="fa fa-user fa-4x"></i>
                             </div>
-                            <h6 class="text-uppercase">Users</h6>
+                            <h6 class="text-uppercase"><strong>Users</strong></h6>
                             {/* <h1 class="display-4">134</h1> */}
                         </div>
                     </a>
@@ -44,7 +44,7 @@ const Dashboard = ( {login, role} ) => {
                             <div class="rotate">
                                 <i class="fa fa-list fa-4x"></i>
                             </div>
-                            <h6 class="text-uppercase">Orders</h6>
+                            <h6 class="text-uppercase"><strong>Orders</strong></h6>
                             {/* <h1 class="display-4">87</h1> */}
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
+import { LocalDiningOutlined, NoEncryption } from '@material-ui/icons';
 import { mergeClasses, withThemeCreator } from '@material-ui/styles';
 
 const drawerWidth = 0;
@@ -59,6 +60,7 @@ export default makeStyles((theme) => ({
   },
   link: {
     color: 'white',
+    fontWeight: 'bold',
     padding:'10px',
     textDecoration: 'none',
     '&:hover': {
@@ -66,6 +68,13 @@ export default makeStyles((theme) => ({
          
     },
     
+  },
+  log: {
+    borderStyle: 'none',
+    background:'#1C2331',
+    color : 'white',
+    fontWeight: 'bold'
+
   }
 }));
 

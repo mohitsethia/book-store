@@ -4,7 +4,7 @@ import "./style.css";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-const AddBook = () => {
+const AddBook = ({setProducts}) => {
   const history = useHistory();
   const [error,setError]=useState("")
   const [book, setBook] = useState({
@@ -12,7 +12,8 @@ const AddBook = () => {
     description: "",
     price: "",
     author: "",
-    media:""
+    media:"",
+    category:""
   });
   const handle=(e)=>{
     const { name, value } = e.target;
@@ -25,12 +26,13 @@ const AddBook = () => {
   const addbook = async () => {
     
     try {
-      const { name, description, price, author, media } = book;
-      if (name && description && price && author && media) {
+      const { name, description, price, author, media, category } = book;
+      if (name && description && price && author && media && category) {
         const response =await axios.post("http://localhost:9002/books", book)
         console.log(response)
+        setProducts(product=>[...product,response.data.book])
           alert(response.data.message);
-          history.push("/");
+          history.push("/getbooks");
         } 
       else {
         alert("invalid input");
@@ -50,6 +52,13 @@ const AddBook = () => {
         name="name"
         value={book.name}
         placeholder="Book Name"
+        onChange={(e)=>handle(e)}
+      ></input>
+       <input
+        type="text"
+        name="category"
+        value={book.category}
+        placeholder="Book Category"
         onChange={(e)=>handle(e)}
       ></input>
       <input
@@ -80,6 +89,7 @@ const AddBook = () => {
         placeholder="Image URL"
         onChange={(e)=>handle(e)}
       ></input>
+      
       
       {error && <p style={{ color: "red" }}>Error- {error}</p>}
       <div className="button" onClick={addbook}>

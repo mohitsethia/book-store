@@ -24,7 +24,7 @@ const ProductView = ({products}) => {
         const id = window.location.pathname.split("/");
         fetchProduct(id[2]);
       }, []);
-
+       console.log('product',product);
     return (
         <Container className="product-view">
           <Grid container>
@@ -35,8 +35,13 @@ const ProductView = ({products}) => {
             <Grid item xs={12} md={5} className="text">
               <Typography variant="h2"><b>{product.name}</b></Typography>
               <hr />
+              <Typography variant="p"> By <b>{product.author}</b> (Author) </Typography>
+              <br/><br/>
+              <Typography variant="p"> Category : <b>{product.category}</b> </Typography>
+              <br/><br/>
               <Typography variant="p" dangerouslySetInnerHTML={createMarkup(product.description)} />
-              <Typography variant="h3" color="secondary" >Price: <b> {product.price} </b> </Typography>
+              <br/><br/>
+              <Typography variant="h3" color="secondary" >Price: <b> ₹{product.price} </b> </Typography>
               <br/>
               <Grid container spacing={4}>
                 <Grid item xs={12}>

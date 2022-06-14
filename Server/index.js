@@ -42,7 +42,8 @@ const bookSchema = new mongoose.Schema({
   description: String,
   price: Number,
   author: String,
-  media: String
+  media: String,
+  category: String
 });
 
 const cartSchema = new mongoose.Schema({
@@ -54,7 +55,8 @@ const cartSchema = new mongoose.Schema({
 	quantity: Number,
 })
 
-const Cart = new mongoose.model( "Cart", cartSchema);
+
+const Cart = new mongoose.model( "Cart",cartSchema);
 const User = new mongoose.model("User", userSchema);
 const Book = new mongoose.model("Book", bookSchema);
 
@@ -65,7 +67,7 @@ app.post("/login", (req, res) => {
     User.findOne({ email: email }, (err, user) => {
       if (user) {
         if (password === user.password) {
-          const token = jwt.sign({ userId: user._id, role: user.role }, mySecret, {
+          const token = jwt.sign({ userId: user._id, role: user.role, userName: user.name }, mySecret, {
             expiresIn: "24hr",
           });
           res
@@ -88,8 +90,8 @@ app.post("/register", (req, res) => {
   User.findOne({ email: email }, (err, user) => {
     if (user) {
       res.status(409).send({ message: "User already registered" });
-    } else if(length(password) <= 8){
-      res.status(409).send({ message: "make sure the length of the password is greater than 8" });
+    } else if(password.length<= 8){
+      res.status(409).send({ message: "make sure the of the pssword is greater than 8" });
     } else {
       const user = new User({
         name,
@@ -118,26 +120,25 @@ app.get("/users", (req, res) => {
   });
 });
 
-app.get("/cart", authVerify, (res, req) => {
+app.get("/cart", authVerify, (req, res) => {
   const { userId } = req.user;
-  console.log(userId)
   Cart.find({ userId }, (err, carts) => {
     if (err) {
       res.send(err);
     } else {
+      console.log(carts);
       res.send(carts);
     }
-  });
+  }).populate('bookId');
 })
 app.post("/cart", authVerify, (req, res) => {
   const { userId } = req.user;
-  const { productId, quantity } = req.body;
+  const { bookId, quantity } = req.body;
   const cart = new Cart({
     userId,
-    productId,
+    bookId,
     quantity,
   });
-
   cart.save((err, cart) => {
     if (err) {
       res.send(err);
@@ -159,25 +160,27 @@ app.get("/books", (req, res) => {
 });
 
 app.post("/books", (req, res) => {
-  const { name, description, price, author, media } = req.body;
+  const { name, description, price, author, media,category } = req.body;
   const book = new Book({
     name,
     description,
     price,
     author,
-    media
+    media,
+    category
   });
   book.save((err) => {
     if (err) {
       res.send(err);
     } else {
-      res.send({ message: "Book added successfully" });
+      res.send({ message: "Book added successfully" ,book});
     }
   });
 });
 
-app.get("/getbooks", (req, res) => {
-  Book.find({}, (err, books) => {
+app.get("/getBooksByCategory", (req, res) => {
+  const Category = req.body.category;
+  Book.find({category: Category}, (err, books) => {
     if (err) {
       res.send(err);
     } else {

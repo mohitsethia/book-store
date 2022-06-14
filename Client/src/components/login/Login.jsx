@@ -26,14 +26,15 @@ const Login = ({ login, setLogin,setRole,setUserName }) => {
       setLogin(true);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
+      localStorage.setItem("userName", response.data.name);
       setRole(localStorage.getItem("role"))
       setUserName(response.data.name)
       if(response.data.role==="ADMIN") {
-        history.push("/sidebar");
+        history.push("/Admin");
       } else {
         history.push("/");
       }
-      console.log(response.name)
+      console.log(response.data.name);
 
     } catch (error) {
       setError(error?.response.data?.message);

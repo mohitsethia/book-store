@@ -7,7 +7,7 @@ function authVerify(req, res, next) {
   const token = req.headers.authorization;
   try {
     const decoded = jwt.verify(token, secret);
-    req.user = { userId: decoded.userId, role: decoded.role };
+    req.user = { userId: decoded.userId, role: decoded.role, userName: decoded.userName};
     return next();
   } catch (error) {
     console.log(error);
