@@ -43,20 +43,19 @@ const bookSchema = new mongoose.Schema({
   price: Number,
   author: String,
   media: String,
-  category: String
+  category: String,
 });
 
-const cartSchema = new mongoose.Schema({
-  userId: {type: mongoose.Schema.Types.ObjectId},
-	bookId: {
-		type: mongoose.Schema.Types.ObjectId, 
-		ref: "Book" 
-	},
-	quantity: Number,
-})
+// const cartSchema = new mongoose.Schema({
+//   userId: { type: mongoose.Schema.Types.ObjectId },
+//   bookId: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Book",
+//   },
+//   quantity: Number,
+// });
 
-
-const Cart = new mongoose.model( "Cart",cartSchema);
+// const Cart = new mongoose.model("Cart", cartSchema);
 const User = new mongoose.model("User", userSchema);
 const Book = new mongoose.model("Book", bookSchema);
 
@@ -67,12 +66,19 @@ app.post("/login", (req, res) => {
     User.findOne({ email: email }, (err, user) => {
       if (user) {
         if (password === user.password) {
-          const token = jwt.sign({ userId: user._id, role: user.role, userName: user.name }, mySecret, {
-            expiresIn: "24hr",
+          const token = jwt.sign(
+            { userId: user._id, role: user.role, userName: user.name },
+            mySecret,
+            {
+              expiresIn: "24hr",
+            }
+          );
+          res.status(200).send({
+            message: "Login Successfull",
+            token,
+            role: user.role,
+            name: user.name,
           });
-          res
-            .status(200)
-            .send({ message: "Login Successfull", token, role: user.role,name: user.name});
         } else {
           res.status(403).send({ message: "Password didn't match" });
         }
@@ -90,8 +96,10 @@ app.post("/register", (req, res) => {
   User.findOne({ email: email }, (err, user) => {
     if (user) {
       res.status(409).send({ message: "User already registered" });
-    } else if(password.length<= 8){
-      res.status(409).send({ message: "make sure the of the pssword is greater than 8" });
+    } else if (password.length <= 8) {
+      res
+        .status(409)
+        .send({ message: "make sure the of the pssword is greater than 8" });
     } else {
       const user = new User({
         name,
@@ -120,37 +128,49 @@ app.get("/users", (req, res) => {
   });
 });
 
-app.get("/cart", authVerify, (req, res) => {
-  const { userId } = req.user;
-  Cart.find({ userId }, (err, carts) => {
-    if (err) {
-      res.send(err);
-    } else {
-      console.log(carts);
-      res.send(carts);
-    }
-  }).populate('bookId');
-})
-app.post("/cart", authVerify, (req, res) => {
-  const { userId } = req.user;
-  const { bookId, quantity } = req.body;
-  const cart = new Cart({
-    userId,
-    bookId,
-    quantity,
-  });
-  cart.save((err, cart) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.send({ message: "Book added to Cart successfully",  cart });
-    }
-  });
-})
+// app.get("/cart", authVerify, (req, res) => {
+//   const { userId } = req.user;
+//   Cart.find({ userId }, (err, carts) => {
+//     if (err) {
+//       res.send(err);
+//     } else {
+//       console.log(carts);
+//       res.send(carts);
+//     }
+//   }).populate("bookId");
+// });
+// app.post("/cart", authVerify, (req, res) => {
+//   const { userId } = req.user;
+//   const { bookId, quantity } = req.body;
+//   const cart = new Cart({
+//     userId,
+//     bookId,
+//     quantity,
+//   });
+//   cart.save((err, cart) => {
+//     if (err) {
+//       res.send(err);
+//     } else {
+//       res.send({ message: "Book added to Cart successfully", cart });
+//     }
+//   });
+// });
 app.get("/books", (req, res) => {
   // await Book.insertMany(quizData)
 
- Book.find({}, (err, books) => {
+  Book.find({}, (err, books) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.send(books);
+    }
+  });
+});
+
+app.get("/books/:id", (req, res) => {
+  // await Book.insertMany(quizData)
+
+  Book.findById(req.params.id, (err, books) => {
     if (err) {
       res.send(err);
     } else {
@@ -160,20 +180,20 @@ app.get("/books", (req, res) => {
 });
 
 app.post("/books", (req, res) => {
-  const { name, description, price, author, media,category } = req.body;
+  const { name, description, price, author, media, category } = req.body;
   const book = new Book({
     name,
     description,
     price,
     author,
     media,
-    category
+    category,
   });
   book.save((err) => {
     if (err) {
       res.send(err);
     } else {
-      res.send({ message: "Book added successfully" ,book});
+      res.send({ message: "Book added successfully", book });
     }
   });
 });
@@ -181,7 +201,7 @@ app.post("/books", (req, res) => {
 app.post("/getBooksByCategory", (req, res) => {
   const Category = req.body.category;
   console.log("Category: ", Category, " req body: ", req.body);
-  Book.find({category: Category}, (err, books) => {
+  Book.find({ category: Category }, (err, books) => {
     if (err) {
       res.send(err);
     } else {
@@ -192,35 +212,35 @@ app.post("/getBooksByCategory", (req, res) => {
 
 app.delete("/delete/:id", (req, res) => {
   const id = req.params.id;
-  Book.deleteOne({_id: id}, function(err){
-    if(err){
-			res.send(err);
-		}
-		else{
-			res.sendStatus(200);
-		}
-  })
+  Book.deleteOne({ _id: id }, function (err) {
+    if (err) {
+      res.send(err);
+    } else {
+      res.sendStatus(200);
+    }
+  });
 });
 
 app.patch("/update/:id", (req, res) => {
   const id = req.params.id;
-  const { name, description, price, author, media,category } = req.body;
-  const book = { $set: {
-    "name": name,
-    "description": description,
-    "price": price,
-    "author": author,
-    "media": media,
-    "category": category
-  }};
-  Book.updateOne({_id: id}, book, function(err){
-    if(err){
-			res.send(500);
-		}
-		else{
-			res.sendStatus(200);
-		}
-  })
+  const { name, description, price, author, media, category } = req.body;
+  const book = {
+    $set: {
+      name: name,
+      description: description,
+      price: price,
+      author: author,
+      media: media,
+      category: category,
+    },
+  };
+  Book.updateOne({ _id: id }, book, function (err) {
+    if (err) {
+      res.send(500);
+    } else {
+      res.sendStatus(200);
+    }
+  });
 });
 
 app.listen(9002, () => {

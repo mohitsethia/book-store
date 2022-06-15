@@ -23,18 +23,19 @@ import UpdateBook from "./components/Admin/UpdateBook";
 import ViewOrders from "./components/Admin/ViewOrders";
 import MyOrders from "./components/UserOrders/MyOrders";
 
-
 const App = ({ setLoginUser }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(
+    JSON.parse(localStorage.getItem("cart")) ?? []
+  );
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [login, setLogin] = useState(
     localStorage.getItem("token") ? true : false
   );
-  const [token,setToken]=useState(localStorage.getItem("token"))
-  const [userName,setUserName]=useState(localStorage.getItem("userName"));
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [userName, setUserName] = useState(localStorage.getItem("userName"));
   const [role, setRole] = useState(localStorage.getItem("role"));
   const fetchProducts = async () => {
     const { data } = await axios.get("http://localhost:9002/books");
@@ -42,45 +43,81 @@ const App = ({ setLoginUser }) => {
     setProducts(data);
     console.log(data);
   };
-  const fetchCart = async () => {
-    const response = await axios.get("http://localhost:9002/cart", {headers: { authorization: token },});
-    setCart(response.data);
+  // const fetchCart = async () => {
+  //   const response = await axios.get("http://localhost:9002/cart", {
+  //     headers: { authorization: token },
+  //   });
+  //   setCart(response.data);
+  // };
+
+  const handleCart = async (productId, operation = "Add") => {
+    if (operation === "Remove") {
+      setCart((items) => items.filter((item) => item._id !== productId));
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(cart.filter((item) => item._id !== productId))
+      );
+      return;
+    }
+    const item = products.find((item) => item._id === productId);
+    const quantity =
+      cart.find((cartItem) => cartItem._id === productId)?.quantity ?? 0;
+    const cartItem = {
+      ...item,
+      quantity:
+        operation === "Add"
+          ? quantity + 1
+          : operation === "Sub"
+          ? quantity - 1
+          : quantity,
+    };
+    if (operation === "Add" && cartItem.quantity === 1) {
+      setCart((items) => [...items, cartItem]);
+      localStorage.setItem("cart", JSON.stringify([...cart, cartItem]));
+    } else if (operation === "Sub" && cartItem.quantity === 0) {
+      setCart((items) => items.filter((item) => item._id !== productId));
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(cart.filter((item) => item._id !== productId))
+      );
+    } else {
+      setCart((items) =>
+        items.map((item) => {
+          return item._id === productId ? cartItem : item;
+        })
+      );
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(
+          cart.map((item) => {
+            return item._id === productId ? cartItem : item;
+          })
+        )
+      );
+    }
   };
 
-  const handleAddToCart = async (productId, quantity) => {
-    const response = await axios.post("http://localhost:9002/cart",{bookId: productId,quantity},{headers: { authorization: token }});
-    const { _id, bookId } = response.data.cart
-    const item = products.find(item=>item._id===bookId);
-    quantity = 1;
-    const cartItem = { bookId:item, quantity,_id };
-    console.log(cartItem,cart)
-    setCart(items=>[...items, cartItem]);
+  // const handleUpdateCartQty = async (lineItemId, quantity) => {
+  //   const response = await commerce.cart.update(lineItemId, { quantity });
 
-  };
+  //   setCart(response.cart);
+  // };
 
-  const handleUpdateCartQty = async (lineItemId, quantity) => {
-    const response = await commerce.cart.update(lineItemId, { quantity });
-    
-    setCart(response.cart);
-  };
+  // const handleRemoveFromCart = async (lineItemId) => {
+  //   const response = cart.filter((item) => item._id !== lineItemId);
 
-  const handleRemoveFromCart = async (lineItemId) => {
-    const response = cart.filter((item) => item._id !== lineItemId);
-
-    setCart(response);
-  };
+  //   setCart(response);
+  // };
 
   const handleEmptyCart = async () => {
-    const response = await commerce.cart.empty();
-
     setCart([]);
   };
 
-  const refreshCart = async () => {
-    const newCart = await commerce.cart.refresh();
+  // const refreshCart = async () => {
+  //   const newCart = await commerce.cart.refresh();
 
-    setCart(newCart);
-  };
+  //   setCart(newCart);
+  // };
 
   const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
     try {
@@ -90,8 +127,6 @@ const App = ({ setLoginUser }) => {
       );
 
       setOrder(incomingOrder);
-
-      refreshCart();
     } catch (error) {
       setErrorMessage(error.data.error.message);
     }
@@ -99,12 +134,13 @@ const App = ({ setLoginUser }) => {
 
   useEffect(() => {
     fetchProducts();
-    fetchCart();
-    
+    // fetchCart();
   }, []);
 
-  console.log({token})
-  console.log("role: ", {role}, " username: ", {userName}, " another ", {setUserName});
+  console.log({ token });
+  console.log("role: ", { role }, " username: ", { userName }, " another ", {
+    setUserName,
+  });
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
@@ -122,13 +158,15 @@ const App = ({ setLoginUser }) => {
           />
           <Switch>
             <Route exact path="/">
-              <Products
-                products={products}
-                onAddToCart={handleAddToCart}
-              />
+              <Products products={products} onAddToCart={handleCart} />
             </Route>
             <Route exact path="/login">
-              <Login login={login} setLogin={setLogin} setRole={setRole} setUserName={setUserName}/>
+              <Login
+                login={login}
+                setLogin={setLogin}
+                setRole={setRole}
+                setUserName={setUserName}
+              />
             </Route>
             <Route exact path="/register">
               <Register />
@@ -136,8 +174,7 @@ const App = ({ setLoginUser }) => {
             <Route exact path="/cart">
               <Cart
                 cart={cart}
-                onUpdateCartQty={handleUpdateCartQty}
-                onRemoveFromCart={handleRemoveFromCart}
+                handleCart={handleCart}
                 onEmptyCart={handleEmptyCart}
               />
             </Route>
@@ -150,37 +187,35 @@ const App = ({ setLoginUser }) => {
               />
             </Route>
             <Route path="/product-view/:id" exact>
-              <ProductView 
-              products = {products}/>
+              <ProductView />
             </Route>
             <Route path="/Userlist" exact>
               <Userlist login={login} role={role} />
             </Route>
             <Route path="/AddBook" exact>
-              <AddBook
-              setProducts={setProducts}/>
+              <AddBook setProducts={setProducts} />
             </Route>
-            <Route path="/update" exact>
-              <UpdateBook login={login} role={role}/>
+            <Route path="/update/:id" exact>
+              <UpdateBook login={login} role={role} />
             </Route>
             <Route path="/getbooks" exact>
-              <Getbooks login={login} role={role}/>
+              <Getbooks login={login} role={role} />
             </Route>
             <Route path="/vieworders" exact>
-              <ViewOrders login={login} role={role}/>
+              <ViewOrders login={login} role={role} />
             </Route>
             <Route path="/myorders" exact>
-              <MyOrders login={login} role={role}/>
+              <MyOrders login={login} role={role} />
             </Route>
-            
-              <Route path="/Admin" exact>
-                <div class="container-fluid" id="main">
-                  <div class="row row-offcanvas row-offcanvas-left">
-                    <Sidebar login={login} role={role}/>
-                    <Dashboard login={login} role={role}/>
-                  </div>
+
+            <Route path="/Admin" exact>
+              <div class="container-fluid" id="main">
+                <div class="row row-offcanvas row-offcanvas-left">
+                  <Sidebar login={login} role={role} />
+                  <Dashboard login={login} role={role} />
                 </div>
-              </Route>
+              </div>
+            </Route>
           </Switch>
         </div>
       </Router>

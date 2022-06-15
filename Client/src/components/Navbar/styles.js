@@ -75,6 +75,17 @@ export default makeStyles((theme) => ({
     color : 'white',
     fontWeight: 'bold'
 
-  }
+  },
+  searchs: {
+    justifyContent: 'center',
+    display: 'flex',
+    marginTop: '40px',
+    },
+  searchb: {
+    marginBottom: '10px',
+    height: '50%',
+    width: '50%',
+    paddingLeft: '10px',
+    },
 }));
 

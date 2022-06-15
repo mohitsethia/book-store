@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Grid, InputAdornment, Input, Button } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
@@ -13,19 +13,30 @@ import axios from "axios";
 
 const Products = ({ products, onAddToCart }) => {
   const classes = useStyles();
-  const [error,setError]=useState("")
+  const [error, setError] = useState("");
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState('All')
+  const [category, setCategory] = useState("All");
 
   function handleScroll() {
     window.scroll({
       top: document.body.offsetHeight,
-      left: 0, 
-      behavior: 'smooth',
+      left: 0,
+      behavior: "smooth",
     });
   }
   console.log(products);
+  const filteredProducts = useMemo(() => {
+    if (searchTerm === "" && category === "All") {
+      return products;
+    } else if (searchTerm !== "") {
+      return products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    } else if (category !== "All") {
+      return products.filter((product) => product.category === category);
+    }
+  }, [products, searchTerm, category]);
 
   // const filterItem = async (categItem) => {
   //   const updatedItems = products.filter((product) => {
@@ -45,7 +56,7 @@ const Products = ({ products, onAddToCart }) => {
   // }
 
   return (
-    <main className={classes.content} >
+    <main className={classes.content}>
       <div className={classes.toolbar} />
       <Carousel fade infiniteLoop useKeyboardArrows autoPlay>
         <Carousel.Item>
@@ -80,7 +91,8 @@ const Products = ({ products, onAddToCart }) => {
         <Carousel.Item>
           <img className="d-block w-100" src={logo2} alt="Second slide" />
           <Carousel.Caption>
-            <Button onClick={handleScroll}
+            <Button
+              onClick={handleScroll}
               className={classes.but}
               size="large"
               variant="contained"
@@ -109,36 +121,33 @@ const Products = ({ products, onAddToCart }) => {
         />
       </div>
       <div className="menu-tabs container">
-          <div className="menu-tab d-flex justify-content-around">
-              <button className="btn btn-light" onClick={() => setCategory('All')}>All</button>
-              <button className="btn btn-primary" onClick={() => setCategory('Fiction')}>Fiction</button>
-              <button className="btn btn-warning" onClick={() => setCategory('Horror')}>Horror</button>
-              {/* <button className="btn btn-warning" onClick={() => filterItem('evening')}>Evening</button>
+        <div className="menu-tab d-flex justify-content-around">
+          <button className="btn btn-light" onClick={() => setCategory("All")}>
+            All
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => setCategory("Fiction")}
+          >
+            Fiction
+          </button>
+          <button
+            className="btn btn-warning"
+            onClick={() => setCategory("Horror")}
+          >
+            Horror
+          </button>
+          {/* <button className="btn btn-warning" onClick={() => filterItem('evening')}>Evening</button>
               <button className="btn btn-warning" onClick={() => filterItem('dinner')}>Dinner</button> */}
-              
-          </div>
+        </div>
       </div>
 
       <Grid className={classes.content} container justify="center" spacing={5}>
-        {products
-          .filter((product) => {
-            if (searchTerm === "") {
-              return product;
-            } else if (
-              product.name
-                .toLowerCase()
-                .includes(searchTerm.toLocaleLowerCase())
-            ) {
-              return product;
-            } else {
-              return product.category === category
-            }
-          })
-          .map((product) => (
-            <Grid item key={product._id} xs={12} sm={6} md={4} lg={3} id="pro">
-              <Product product={product} onAddToCart={onAddToCart} />
-            </Grid>
-          ))}
+        {filteredProducts.map((product) => (
+          <Grid item key={product._id} xs={12} sm={6} md={4} lg={3} id="pro">
+            <Product product={product} onAddToCart={onAddToCart} />
+          </Grid>
+        ))}
       </Grid>
     </main>
   );

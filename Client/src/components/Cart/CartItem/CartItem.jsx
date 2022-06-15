@@ -1,29 +1,51 @@
-import React from 'react';
-import { Typography, Button, Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
+import React from "react";
+import {
+  Typography,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+} from "@material-ui/core";
 
-import useStyles from './styles';
+import useStyles from "./styles";
 
-const CartItem = ({ item, onUpdateCartQty, onRemoveFromCart }) => {
+const CartItem = ({ item, handleCart }) => {
   const classes = useStyles();
-
-  const handleUpdateCartQty = (lineItemId, newQuantity) => onUpdateCartQty(lineItemId, newQuantity);
-
-  const handleRemoveFromCart = (lineItemId) => onRemoveFromCart(lineItemId);
 
   return (
     <Card className="cart-item">
-      <CardMedia image={item.bookId.media} alt={item.bookId.name} className={classes.media} />
+      <CardMedia image={item.media} alt={item.name} className={classes.media} />
       <CardContent className={classes.cardContent}>
-        <Typography variant="h6">{item.bookId.name}</Typography>
-        <Typography variant="h6" color='secondary' >{}</Typography>
+        <Typography variant="h6">{item.name}</Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
         <div className={classes.buttons}>
-          <Button type="button" size="small" onClick={() => handleUpdateCartQty(item._id, item.quantity - 1)}>-</Button>
+          <Button
+            type="button"
+            size="small"
+            onClick={() => handleCart(item._id, "Sub")}
+          >
+            -
+          </Button>
           <Typography>&nbsp;{item.quantity}&nbsp;</Typography>
-          <Button type="button" size="small" onClick={() => handleUpdateCartQty(item._id, item.quantity + 1)}>+</Button>
+          <Button
+            type="button"
+            size="small"
+            onClick={() => handleCart(item._id)}
+          >
+            +
+          </Button>
         </div>
-        <Button className={classes.button} variant="contained" type="button" color='secondary' onClick={() => handleRemoveFromCart(item._id)}>Remove</Button>
+        <Button
+          className={classes.button}
+          variant="contained"
+          type="button"
+          color="secondary"
+          onClick={() => handleCart(item._id, "Remove")}
+        >
+          Remove
+        </Button>
       </CardActions>
     </Card>
   );

@@ -1,20 +1,25 @@
-import React from "react";
 import {
   AppBar,
-  Toolbar,
-  IconButton,
   Badge,
+  IconButton,
+  Input,
+  InputAdornment,
+  Toolbar,
   Typography,
 } from "@material-ui/core";
 import { ShoppingCart } from "@material-ui/icons";
+import SearchIcon from "@material-ui/icons/Search";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/circles.png";
 import useStyles from "./styles";
+import React, { useState } from "react";
 // import Register from "../register/Register";
 
-const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
+const Navbar = ({ totalItems, login, role, setLogin, userName }) => {
   const classes = useStyles();
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
   console.log(role);
   console.log(userName);
   return (
@@ -50,7 +55,7 @@ const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
                 Register
               </Link>
             )}
-            
+
             {login && role === "ADMIN" && (
               <Link className={classes.link} to="/Admin">
                 Admin
@@ -67,28 +72,29 @@ const Navbar = ({ totalItems, login, role, setLogin,userName }) => {
               </Link>
             )}
             {login && (
-              <button className={classes.log}
+              <button
+                className={classes.log}
                 onClick={() => {
                   setLogin(false);
                   localStorage.removeItem("token");
                 }}
               >
                 <Link className={classes.log} to="/">
-                  Logout 
+                  Logout
                 </Link>
               </button>
             )}
-            {login && role==="CUSTOMER" && (
+            {login && role === "CUSTOMER" && (
               <IconButton
-              component={Link}
-              to="/cart"
-              aria-label="Show cart items"
-              color="inherit"
-            >
-              <Badge badgeContent={totalItems} color="secondary">
-                <ShoppingCart />
-              </Badge>
-            </IconButton>
+                component={Link}
+                to="/cart"
+                aria-label="Show cart items"
+                color="inherit"
+              >
+                <Badge badgeContent={totalItems} color="secondary">
+                  <ShoppingCart />
+                </Badge>
+              </IconButton>
             )}
           </div>
         </Toolbar>
