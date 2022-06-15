@@ -9,9 +9,12 @@ import logo1 from "../../assets/2.jpeg";
 import logo2 from "../../assets/4.jpeg";
 import logo3 from "../../assets/3.jpeg";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-const Products = ({ products, onAddToCart }) => {
+const Products = ({ products, onAddToCart, categItem }) => {
   const classes = useStyles();
+  const [items, setItems] = useState(products);
+  const [error,setError]=useState("")
   const [searchTerm, setSearchTerm] = useState("");
   function handleScroll() {
     window.scroll({
@@ -21,6 +24,21 @@ const Products = ({ products, onAddToCart }) => {
     });
   }
   console.log(products);
+
+  const filterItem = async (categItem) => {
+    // const updatedItems = products.filter((product) => {
+    //     return product.category === categItem;
+    // });
+    try {
+    const updatedItems =await axios.post("http://localhost:9002/getBooksByCategory", categItem)
+    setItems(updatedItems);
+    }
+    catch (error) {
+      setError(error.updatedItems)
+    }
+  }
+
+
   return (
     <main className={classes.content} >
       <div className={classes.toolbar} />
@@ -84,6 +102,16 @@ const Products = ({ products, onAddToCart }) => {
             </InputAdornment>
           }
         />
+      </div>
+      <div className="menu-tabs container">
+          <div className="menu-tab d-flex justify-content-around">
+              <button className="btn btn-light" onClick={() => setItems(products)}>All</button>
+              <button className="btn btn-primary" onClick={() => filterItem('Fiction')}>Fiction</button>
+              <button className="btn btn-warning" onClick={() => filterItem('Horror')}>Horror</button>
+              {/* <button className="btn btn-warning" onClick={() => filterItem('evening')}>Evening</button>
+              <button className="btn btn-warning" onClick={() => filterItem('dinner')}>Dinner</button> */}
+              
+          </div>
       </div>
 
       <Grid className={classes.content} container justify="center" spacing={5}>

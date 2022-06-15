@@ -161,13 +161,14 @@ app.get("/books", (req, res) => {
 
 app.post("/books", (req, res) => {
   const { name, description, price, author, media,category } = req.body;
+  const categorylc=category.toLowerCase();
   const book = new Book({
     name,
     description,
     price,
     author,
     media,
-    category
+    category:categorylc
   });
   book.save((err) => {
     if (err) {
@@ -178,9 +179,10 @@ app.post("/books", (req, res) => {
   });
 });
 
-app.get("/getBooksByCategory", (req, res) => {
+app.post("/getBooksByCategory", (req, res) => {
   const Category = req.body.category;
-  Book.find({category: Category}, (err, books) => {
+  const filtercat=Category.toLowerCase()
+  Book.find({category: filtercat}, (err, books) => {
     if (err) {
       res.send(err);
     } else {

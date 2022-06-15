@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Box, makeStyles, TableContainer, Table, TableBody, TableCell, TableHead, TableRow, Paper, IconButton, Tooltip } from "@material-ui/core"
-import { indigo } from '@material-ui/core/colors';
-import axios from "axios";
-import { Link } from "react-router-dom";
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { yellow } from '@material-ui/core/colors';
+// import axios from "axios";
+// import { Link } from "react-router-dom";
+// import EditIcon from '@material-ui/icons/Edit';
+// import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles({
  stuListColor: {
-  backgroundColor: indigo[400],
+  backgroundColor: yellow[500],
   color: "white"
  },
  tableHeadCell: {
@@ -18,43 +18,34 @@ const useStyles = makeStyles({
  },
 })
 
-export default function Getbooks({ login, role, _id }) {
+export default function MyOrders({ login, role, _id }) {
   const classes = useStyles();
-  const [books, setBooks] = useState([]);
-  const handleDelete = async _id => {
-    await axios.delete(`http://localhost:9002/delete/${_id}`);
-    var newbook = books.filter((item) => {
-     return item._id !== _id;
-    })
-    setBooks(newbook);
-   }
-  
-  useEffect(() => {
-    if (login && role === "ADMIN") {
-      axios.get("http://localhost:9002/books").then((res) => {
-        setBooks(res.data);
-      });
-    }
-  }, []);
+
+//   useEffect(() => {
+//     if (login && role === "CUSTOMER") {
+//       axios.get("http://localhost:9002/orders").then((res) => {
+//         setBooks(res.data);
+//       });
+//     }
+//   }, []);
 
   return (
     <div class="col main pt-5 mt-5">
       <Box textAlign="center" p={2} className={classes.stuListColor}>
-        <Typography variant="h4">Book List</Typography>
+        <Typography variant="h4">My Orders</Typography>
       </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: "#7986cb" }}>
+            <TableRow style={{ backgroundColor: "#f9a825" }}>
               <TableCell align="center" className={classes.tableHeadCell}>Sr.No</TableCell>
-              <TableCell align="center" className={classes.tableHeadCell}>Name</TableCell>
-              <TableCell align="center" className={classes.tableHeadCell}>Price</TableCell>
-              <TableCell align="center" className={classes.tableHeadCell}>Author</TableCell>
-              <TableCell align="center" className={classes.tableHeadCell}>Category</TableCell>
-              <TableCell align="center" className={classes.tableHeadCell}>Action</TableCell>
+              <TableCell align="center" className={classes.tableHeadCell}>Book Name</TableCell>
+              <TableCell align="center" className={classes.tableHeadCell}>Order ID</TableCell>
+              <TableCell align="center" className={classes.tableHeadCell}>Payment ID</TableCell>
+              <TableCell align="center" className={classes.tableHeadCell}>Order Date</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          {/* <TableBody>
             {
               books.map((book,i) => {
                 return(
@@ -86,7 +77,7 @@ export default function Getbooks({ login, role, _id }) {
                 )
               })
             }
-          </TableBody>
+          </TableBody> */}
         </Table>
       </TableContainer>
     </div>

@@ -38,7 +38,7 @@ const Dashboard = ( {login, role} ) => {
                 </div>
             </div>
             <div class="col-xl-3 col-sm-6 py-2">
-                <a class="dash" href="#">
+                <a class="dash" href="/vieworders">
                     <div class="card text-white bg-danger h-100">
                         <div class="card-body bg-danger">
                             <div class="rotate">

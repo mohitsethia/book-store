@@ -61,7 +61,7 @@ export default makeStyles((theme) => ({
   link: {
     color: 'white',
     fontWeight: 'bold',
-    padding:'10px',
+    padding:'15px',
     textDecoration: 'none',
     '&:hover': {
       color: '#ffff',
