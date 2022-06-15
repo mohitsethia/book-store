@@ -11,12 +11,13 @@ import logo3 from "../../assets/3.jpeg";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Products = ({ products, onAddToCart, categItem }) => {
+const Products = ({ products, onAddToCart }) => {
   const classes = useStyles();
-  const [items, setItems] = useState(products);
   const [error,setError]=useState("")
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [category, setCategory] = useState('All')
+
   function handleScroll() {
     window.scroll({
       top: document.body.offsetHeight,
@@ -26,22 +27,22 @@ const Products = ({ products, onAddToCart, categItem }) => {
   }
   console.log(products);
 
-  const filterItem = async (categItem) => {
-    // const updatedItems = products.filter((product) => {
-    //     return product.category === categItem;
-    // });
-    try {
-      console.log("category: ", categItem);
-      const category = { category: categItem };
-      const updatedItems = await axios.post("http://localhost:9002/getBooksByCategory", category);
-      console.log("Items: ", updatedItems.data);
-      setBooks(updatedItems.data);
-    }
-    catch (error) {
-      setError(error.updatedItems);
-    }
-  }
+  // const filterItem = async (categItem) => {
+  //   const updatedItems = products.filter((product) => {
+  //       return product.category === categItem;
+  //   });
 
+  //   try {
+  //     console.log("category: ", categItem);
+  //     const category = { category: categItem };
+  //     const updatedItems = await axios.post("http://localhost:9002/getBooksByCategory", category);
+  //     console.log("Items: ", updatedItems.data);
+  //     setBooks(updatedItems.data);
+  //   }
+  //   catch (error) {
+  //     setError(error.updatedItems);
+  //   }
+  // }
 
   return (
     <main className={classes.content} >
@@ -109,9 +110,9 @@ const Products = ({ products, onAddToCart, categItem }) => {
       </div>
       <div className="menu-tabs container">
           <div className="menu-tab d-flex justify-content-around">
-              <button className="btn btn-light" onClick={() => setItems(products)}>All</button>
-              <button className="btn btn-primary" onClick={() => filterItem('fiction')}>Fiction</button>
-              <button className="btn btn-warning" onClick={() => filterItem('horror')}>Horror</button>
+              <button className="btn btn-light" onClick={() => setCategory('All')}>All</button>
+              <button className="btn btn-primary" onClick={() => setCategory('Fiction')}>Fiction</button>
+              <button className="btn btn-warning" onClick={() => setCategory('Horror')}>Horror</button>
               {/* <button className="btn btn-warning" onClick={() => filterItem('evening')}>Evening</button>
               <button className="btn btn-warning" onClick={() => filterItem('dinner')}>Dinner</button> */}
               
@@ -129,6 +130,8 @@ const Products = ({ products, onAddToCart, categItem }) => {
                 .includes(searchTerm.toLocaleLowerCase())
             ) {
               return product;
+            } else {
+              return product.category === category
             }
           })
           .map((product) => (

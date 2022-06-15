@@ -125,7 +125,6 @@ const App = ({ setLoginUser }) => {
               <Products
                 products={products}
                 onAddToCart={handleAddToCart}
-                handleUpdateCartQty
               />
             </Route>
             <Route exact path="/login">
