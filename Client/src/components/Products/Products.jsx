@@ -15,6 +15,7 @@ const Products = ({ products, onAddToCart, categItem }) => {
   const classes = useStyles();
   const [items, setItems] = useState(products);
   const [error,setError]=useState("")
+  const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   function handleScroll() {
     window.scroll({
@@ -30,11 +31,14 @@ const Products = ({ products, onAddToCart, categItem }) => {
     //     return product.category === categItem;
     // });
     try {
-    const updatedItems =await axios.post("http://localhost:9002/getBooksByCategory", categItem)
-    setItems(updatedItems);
+      console.log("category: ", categItem);
+      const category = { category: categItem };
+      const updatedItems = await axios.post("http://localhost:9002/getBooksByCategory", category);
+      console.log("Items: ", updatedItems.data);
+      setBooks(updatedItems.data);
     }
     catch (error) {
-      setError(error.updatedItems)
+      setError(error.updatedItems);
     }
   }
 
@@ -106,8 +110,8 @@ const Products = ({ products, onAddToCart, categItem }) => {
       <div className="menu-tabs container">
           <div className="menu-tab d-flex justify-content-around">
               <button className="btn btn-light" onClick={() => setItems(products)}>All</button>
-              <button className="btn btn-primary" onClick={() => filterItem('Fiction')}>Fiction</button>
-              <button className="btn btn-warning" onClick={() => filterItem('Horror')}>Horror</button>
+              <button className="btn btn-primary" onClick={() => filterItem('fiction')}>Fiction</button>
+              <button className="btn btn-warning" onClick={() => filterItem('horror')}>Horror</button>
               {/* <button className="btn btn-warning" onClick={() => filterItem('evening')}>Evening</button>
               <button className="btn btn-warning" onClick={() => filterItem('dinner')}>Dinner</button> */}
               
