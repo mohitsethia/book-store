@@ -24,10 +24,8 @@ const PaymentForm = ({ nextStep, backStep, shippingData }) => {
           <Grid container spacing={3}>
             <FormInput required name="cardNumber" label="Card Number" />
             <FormInput required name="expiryDate" label="Expiry Date" />
-            <FormInput required name="" label="Address line 1" />
-            <FormInput required name="email" label="Email" />
-            <FormInput required name="city" label="City" />
-            <FormInput required name="zip" label="Zip / Postal code" />
+            <FormInput required name="cvv" label="CVV" />
+            <FormInput required name="cardholder" label="Card Holder Name" />
           </Grid>
           <br />
           <div style={{ display: "flex", justifyContent: "space-between" }}>

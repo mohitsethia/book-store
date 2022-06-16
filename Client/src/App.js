@@ -13,7 +13,7 @@ import Getbooks from "./components/Admin/Getbooks";
 import Sidebar from "./components/Admin/Sidebar";
 import Dashboard from "./components/Admin/Dashboard";
 import AddBook from "./components/Admin/AddBook";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -43,12 +43,6 @@ const App = ({ setLoginUser }) => {
     setProducts(data);
     console.log(data);
   };
-  // const fetchCart = async () => {
-  //   const response = await axios.get("http://localhost:9002/cart", {
-  //     headers: { authorization: token },
-  //   });
-  //   setCart(response.data);
-  // };
 
   const handleCart = async (productId, operation = "Add") => {
     if (operation === "Remove") {
@@ -71,53 +65,41 @@ const App = ({ setLoginUser }) => {
           ? quantity - 1
           : quantity,
     };
-    if (operation === "Add" && cartItem.quantity === 1) {
-      setCart((items) => [...items, cartItem]);
-      localStorage.setItem("cart", JSON.stringify([...cart, cartItem]));
-    } else if (operation === "Sub" && cartItem.quantity === 0) {
-      setCart((items) => items.filter((item) => item._id !== productId));
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(cart.filter((item) => item._id !== productId))
-      );
-    } else {
-      setCart((items) =>
-        items.map((item) => {
-          return item._id === productId ? cartItem : item;
-        })
-      );
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(
-          cart.map((item) => {
+    if(!login){
+        
+    }
+    else{
+      if (operation === "Add" && cartItem.quantity === 1) {
+        setCart((items) => [...items, cartItem]);
+        localStorage.setItem("cart", JSON.stringify([...cart, cartItem]));
+      } else if (operation === "Sub" && cartItem.quantity === 0) {
+        setCart((items) => items.filter((item) => item._id !== productId));
+        localStorage.setItem(
+          "cart",
+          JSON.stringify(cart.filter((item) => item._id !== productId))
+        );
+      } else {
+        setCart((items) =>
+          items.map((item) => {
             return item._id === productId ? cartItem : item;
           })
-        )
-      );
+        );
+        localStorage.setItem(
+          "cart",
+          JSON.stringify(
+            cart.map((item) => {
+              return item._id === productId ? cartItem : item;
+            })
+          )
+        );
+    }
+    
     }
   };
-
-  // const handleUpdateCartQty = async (lineItemId, quantity) => {
-  //   const response = await commerce.cart.update(lineItemId, { quantity });
-
-  //   setCart(response.cart);
-  // };
-
-  // const handleRemoveFromCart = async (lineItemId) => {
-  //   const response = cart.filter((item) => item._id !== lineItemId);
-
-  //   setCart(response);
-  // };
 
   const handleEmptyCart = async () => {
     setCart([]);
   };
-
-  // const refreshCart = async () => {
-  //   const newCart = await commerce.cart.refresh();
-
-  //   setCart(newCart);
-  // };
 
   const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
     try {
@@ -134,7 +116,6 @@ const App = ({ setLoginUser }) => {
 
   useEffect(() => {
     fetchProducts();
-    // fetchCart();
   }, []);
 
   console.log({ token });
@@ -158,7 +139,7 @@ const App = ({ setLoginUser }) => {
           />
           <Switch>
             <Route exact path="/">
-              <Products products={products} onAddToCart={handleCart} />
+              <Products products={products} onAddToCart={handleCart}  login={login}/>
             </Route>
             <Route exact path="/login">
               <Login
@@ -199,7 +180,7 @@ const App = ({ setLoginUser }) => {
               <UpdateBook login={login} role={role} />
             </Route>
             <Route path="/getbooks" exact>
-              <Getbooks login={login} role={role} />
+              <Getbooks login={login} role={role} setProducts={setProducts} />
             </Route>
             <Route path="/vieworders" exact>
               <ViewOrders login={login} role={role} />

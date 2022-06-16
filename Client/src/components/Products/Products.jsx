@@ -10,7 +10,7 @@ import logo2 from "../../assets/4.jpeg";
 import logo3 from "../../assets/3.jpeg";
 import { Link } from "react-router-dom";
 import axios from "axios";
-
+import Stack from "@mui/material/Stack";
 const Products = ({ products, onAddToCart }) => {
   const classes = useStyles();
   const [error, setError] = useState("");
@@ -37,23 +37,6 @@ const Products = ({ products, onAddToCart }) => {
       return products.filter((product) => product.category === category);
     }
   }, [products, searchTerm, category]);
-
-  // const filterItem = async (categItem) => {
-  //   const updatedItems = products.filter((product) => {
-  //       return product.category === categItem;
-  //   });
-
-  //   try {
-  //     console.log("category: ", categItem);
-  //     const category = { category: categItem };
-  //     const updatedItems = await axios.post("http://localhost:9002/getBooksByCategory", category);
-  //     console.log("Items: ", updatedItems.data);
-  //     setBooks(updatedItems.data);
-  //   }
-  //   catch (error) {
-  //     setError(error.updatedItems);
-  //   }
-  // }
 
   return (
     <main className={classes.content}>
@@ -120,25 +103,60 @@ const Products = ({ products, onAddToCart }) => {
           }
         />
       </div>
+      <br />
       <div className="menu-tabs container">
         <div className="menu-tab d-flex justify-content-around">
-          <button className="btn btn-light" onClick={() => setCategory("All")}>
-            All
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => setCategory("Fiction")}
-          >
-            Fiction
-          </button>
-          <button
-            className="btn btn-warning"
-            onClick={() => setCategory("Horror")}
-          >
-            Horror
-          </button>
-          {/* <button className="btn btn-warning" onClick={() => filterItem('evening')}>Evening</button>
-              <button className="btn btn-warning" onClick={() => filterItem('dinner')}>Dinner</button> */}
+          <Stack spacing={2} direction="row">
+            <Button
+              className={classes.allbtn}
+              variant="text"
+              onClick={() => setCategory("All")}
+            >
+              All
+            </Button>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              onClick={() => setCategory("Fiction")}
+            >
+              Fiction
+            </Button>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              onClick={() => setCategory("Kids")}
+            >
+              Kids
+            </Button>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              onClick={() => setCategory("Motivation")}
+            >
+              Motivation
+            </Button>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              onClick={() => setCategory("Article")}
+            >
+              Article
+            </Button>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              onClick={() => setCategory("Novel")}
+            >
+              Novel
+            </Button>
+            <Button
+              className={classes.btn}
+              variant="contained"
+              onClick={() => setCategory("Scientific")}
+            >
+              Scientific
+            </Button>
+          </Stack>
         </div>
       </div>
 

@@ -31,7 +31,9 @@ const AddressForm = ({ nextStep, setShippingData }) => {
             <FormInput required name="lastName" label="Last name" />
             <FormInput required name="address1" label="Address line 1" />
             <FormInput required name="email" label="Email" />
+            <FormInput required name="mobileno" label="Mobile Number" />
             <FormInput required name="city" label="City" />
+            <FormInput required name="state" label="State" />
             <FormInput required name="zip" label="Zip / Postal code" />
           </Grid>
           <br />

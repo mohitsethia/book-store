@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 const Login = ({ login, setLogin,setRole,setUserName }) => {
   const [error, setError] = useState("");
   const history = useHistory();
-
+  console.log(history);
   const [user, setUser] = useState({
     email: "",
     password: "",

@@ -46,16 +46,6 @@ const bookSchema = new mongoose.Schema({
   category: String,
 });
 
-// const cartSchema = new mongoose.Schema({
-//   userId: { type: mongoose.Schema.Types.ObjectId },
-//   bookId: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Book",
-//   },
-//   quantity: Number,
-// });
-
-// const Cart = new mongoose.model("Cart", cartSchema);
 const User = new mongoose.model("User", userSchema);
 const Book = new mongoose.model("Book", bookSchema);
 
@@ -70,7 +60,7 @@ app.post("/login", (req, res) => {
             { userId: user._id, role: user.role, userName: user.name },
             mySecret,
             {
-              expiresIn: "24hr",
+              expiresIn: "20m",
             }
           );
           res.status(200).send({
@@ -128,36 +118,7 @@ app.get("/users", (req, res) => {
   });
 });
 
-// app.get("/cart", authVerify, (req, res) => {
-//   const { userId } = req.user;
-//   Cart.find({ userId }, (err, carts) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       console.log(carts);
-//       res.send(carts);
-//     }
-//   }).populate("bookId");
-// });
-// app.post("/cart", authVerify, (req, res) => {
-//   const { userId } = req.user;
-//   const { bookId, quantity } = req.body;
-//   const cart = new Cart({
-//     userId,
-//     bookId,
-//     quantity,
-//   });
-//   cart.save((err, cart) => {
-//     if (err) {
-//       res.send(err);
-//     } else {
-//       res.send({ message: "Book added to Cart successfully", cart });
-//     }
-//   });
-// });
 app.get("/books", (req, res) => {
-  // await Book.insertMany(quizData)
-
   Book.find({}, (err, books) => {
     if (err) {
       res.send(err);
@@ -168,8 +129,6 @@ app.get("/books", (req, res) => {
 });
 
 app.get("/books/:id", (req, res) => {
-  // await Book.insertMany(quizData)
-
   Book.findById(req.params.id, (err, books) => {
     if (err) {
       res.send(err);

@@ -9,10 +9,11 @@ import {
   CardActionArea,
 } from "@material-ui/core";
 import { AddShoppingCart } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import useStyles from "./styles";
 
-const Product = ({ product, onAddToCart, login }) => {
+const Product = ({ product, onAddToCart,login }) => {
+  const history= useHistory();
   console.log({ product });
   const classes = useStyles();
   return (
@@ -34,18 +35,18 @@ const Product = ({ product, onAddToCart, login }) => {
           </Typography>
         </div>
       </CardContent>
-      {!login && (
+
         <CardActions disableSpacing className={classes.cardActions}>
           <Button
             variant="contained"
             className={classes.button}
             endIcon={<AddShoppingCart />}
-            onClick={() => onAddToCart(product._id)}
+            onClick={login?() => onAddToCart(product._id):()=>history.push("/login")}
           >
             <b>ADD TO CART</b>
           </Button>
         </CardActions>
-      )}
+      
     </Card>
   );
 };

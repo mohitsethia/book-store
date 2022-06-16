@@ -31,16 +31,17 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Getbooks({ login, role }) {
+export default function Getbooks({ login, role,setProducts }) {
   const classes = useStyles();
-  //console.log(_id);
   const [books, setBooks] = useState([]);
   const handleDelete = async (id) => {
     await axios.delete(`http://localhost:9002/delete/${id}`);
     var newbook = books.filter((item) => {
       return item._id !== id;
     });
+    console.log(newbook);
     setBooks(newbook);
+    setProducts(newbook);
   };
 
   useEffect(() => {

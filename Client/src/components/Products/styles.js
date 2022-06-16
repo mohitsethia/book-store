@@ -21,4 +21,11 @@ export default makeStyles((theme) => ({
     width: '50%',
     paddingLeft: '10px',
     },
+    btn: {
+      background: "#1C2331",
+      color: "white",
+    },
+    allbtn: {
+      color: "#1C2331",
+    },
 }));
