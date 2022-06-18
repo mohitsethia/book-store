@@ -1,45 +1,85 @@
-import React, { useState, useEffect } from "react";
+import { Typography } from "@material-ui/core";
 import {
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import { useForm, FormProvider } from "react-hook-form";
-import { Link } from "react-router-dom";
-import FormInput from "./CustomTextField";
+  CardElement,
+  Elements,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import React from "react";
 
-const PaymentForm = ({ nextStep, backStep, shippingData }) => {
-  const methods = useForm();
+const PUBLIC_KEY =
+  "pk_test_51J4t0XSCWKVouCVUCY7gtuxPn568hLqW6TrHXpgWzSrHrpcuwasejweepDw5Seie0MVn2zugCaC3ZxhKVPC2IJm700MJOeCe95";
+
+const stripeTestToPromise = loadStripe(PUBLIC_KEY);
+
+const Form = ({ cartTotal, nextStep, setOrder, cart, token }) => {
+  console.log(cartTotal);
+  const stripe = useStripe();
+  const elements = useElements();
+
+  async function submitHandler(e) {
+    e.preventDefault();
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: elements.getElement(CardElement),
+    });
+    if (!error) {
+      const { id } = paymentMethod;
+      const res = await fetch("http://127.0.0.1:9002/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          token,
+          amount: cartTotal,
+          lineItems: cart.map((book) => ({
+            book: book._id,
+            quantity: book.quantity,
+          })),
+        }),
+      });
+      const data = await res.json();
+      setOrder({ data });
+      nextStep();
+    }
+  }
 
   return (
     <>
       <Typography variant="h6" gutterBottom>
         Payment Form
       </Typography>
-      <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit((data) => {})}>
-          <Grid container spacing={3}>
-            <FormInput required name="cardNumber" label="Card Number" />
-            <FormInput required name="expiryDate" label="Expiry Date" />
-            <FormInput required name="cvv" label="CVV" />
-            <FormInput required name="cardholder" label="Card Holder Name" />
-          </Grid>
-          <br />
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" onClick={backStep}>
-              Back
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Next
-            </Button>
-          </div>
-        </form>
-      </FormProvider>
+      <form onSubmit={submitHandler}>
+        <CardElement />
+        <button type="submit" disabled={!stripe}>
+          Pay
+        </button>
+      </form>
     </>
   );
 };
 
-export default PaymentForm;
+export default function PaymentForm({
+  setOrder,
+  nextStep,
+  shippingData,
+  cartTotal,
+  cart,
+  token,
+}) {
+  return (
+    <Elements stripe={stripeTestToPromise}>
+      <Form
+        cart={cart}
+        token={token}
+        cartTotal={cartTotal}
+        setOrder={setOrder}
+        user={shippingData.firstName}
+        nextStep={nextStep}
+      />
+    </Elements>
+  );
+}

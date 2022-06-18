@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 
 const Register = () => {
   const history = useHistory();
-  const [error,setError]=useState("")
+  const [error, setError] = useState("");
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -23,25 +23,30 @@ const Register = () => {
   };
 
   const register = async () => {
-    
     try {
       const { name, email, password, reEnterPassword, librarian } = user;
       console.log(user);
-      if (name && email && password.length > 8 && password === reEnterPassword) {
-        const response =await axios.post("http://localhost:9002/register", user)
-        console.log(response)
-          alert(response.data.message);
-          history.push("/login");
-        } 
-      else if (password.length < 8){
+      if (
+        name &&
+        email &&
+        password.length > 8 &&
+        password === reEnterPassword
+      ) {
+        const response = await axios.post(
+          "http://127.0.0.1:9002/register",
+          user
+        );
+        console.log(response);
+        alert(response.data.message);
+        history.push("/login");
+      } else if (password.length < 8) {
         alert("password length is shorter!");
       } else {
         alert("invalid input");
-      }}
-     catch (error) {
-      setError(error?.response.data?.message)
+      }
+    } catch (error) {
+      setError(error?.response.data?.message);
     }
-    
   };
 
   return (

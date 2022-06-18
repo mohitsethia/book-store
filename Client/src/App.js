@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from "react";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import { CssBaseline } from "@material-ui/core";
-import { commerce } from "./lib/commerce";
-import Products from "./components/Products/Products";
-import Navbar from "./components/Navbar/Navbar";
-import Login from "./components/login/Login";
-import Register from "./components/register/Register";
-import Cart from "./components/Cart/Cart";
-import Checkout from "./components/CheckoutForm/Checkout/Checkout";
-import ProductView from "./components/ProductView/ProductView";
-import Footer from "./components/Footer/Footer";
-import Getbooks from "./components/Admin/Getbooks";
-import Sidebar from "./components/Admin/Sidebar";
-import Dashboard from "./components/Admin/Dashboard";
-import AddBook from "./components/Admin/AddBook";
-import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from "react-router-dom";
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import Userlist from "./components/Admin/Userlist";
-import axios from "axios";
+import React, { useEffect, useMemo, useState } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import AddBook from "./components/Admin/AddBook";
+import Dashboard from "./components/Admin/Dashboard";
+import Getbooks from "./components/Admin/Getbooks";
+import Sidebar from "./components/Admin/Sidebar";
 import UpdateBook from "./components/Admin/UpdateBook";
+import Userlist from "./components/Admin/Userlist";
 import ViewOrders from "./components/Admin/ViewOrders";
+import Cart from "./components/Cart/Cart";
+import Checkout from "./components/CheckoutForm/Checkout/Checkout";
+import Footer from "./components/Footer/Footer";
+import Login from "./components/login/Login";
+import Navbar from "./components/Navbar/Navbar";
+import Products from "./components/Products/Products";
+import ProductView from "./components/ProductView/ProductView";
+import Register from "./components/register/Register";
 import MyOrders from "./components/UserOrders/MyOrders";
 
 const App = ({ setLoginUser }) => {
@@ -29,8 +28,12 @@ const App = ({ setLoginUser }) => {
   const [cart, setCart] = useState(
     JSON.parse(localStorage.getItem("cart")) ?? []
   );
+  const cartTotal = useMemo(() => {
+    return cart.length
+      ? cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+      : 1000;
+  }, [cart]);
   const [order, setOrder] = useState({});
-  const [errorMessage, setErrorMessage] = useState("");
   const [login, setLogin] = useState(
     localStorage.getItem("token") ? true : false
   );
@@ -41,7 +44,6 @@ const App = ({ setLoginUser }) => {
     const { data } = await axios.get("http://localhost:9002/books");
 
     setProducts(data);
-    console.log(data);
   };
 
   const handleCart = async (productId, operation = "Add") => {
@@ -65,10 +67,8 @@ const App = ({ setLoginUser }) => {
           ? quantity - 1
           : quantity,
     };
-    if(!login){
-        
-    }
-    else{
+    if (!login) {
+    } else {
       if (operation === "Add" && cartItem.quantity === 1) {
         setCart((items) => [...items, cartItem]);
         localStorage.setItem("cart", JSON.stringify([...cart, cartItem]));
@@ -92,33 +92,19 @@ const App = ({ setLoginUser }) => {
             })
           )
         );
-    }
-    
+      }
     }
   };
 
   const handleEmptyCart = async () => {
     setCart([]);
-  };
-
-  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
-    try {
-      const incomingOrder = await commerce.checkout.capture(
-        checkoutTokenId,
-        newOrder
-      );
-
-      setOrder(incomingOrder);
-    } catch (error) {
-      setErrorMessage(error.data.error.message);
-    }
+    localStorage.removeItem("cart");
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  console.log({ token });
   console.log("role: ", { role }, " username: ", { userName }, " another ", {
     setUserName,
   });
@@ -139,7 +125,11 @@ const App = ({ setLoginUser }) => {
           />
           <Switch>
             <Route exact path="/">
-              <Products products={products} onAddToCart={handleCart}  login={login}/>
+              <Products
+                products={products}
+                onAddToCart={handleCart}
+                login={login}
+              />
             </Route>
             <Route exact path="/login">
               <Login
@@ -161,10 +151,11 @@ const App = ({ setLoginUser }) => {
             </Route>
             <Route path="/checkout" exact>
               <Checkout
+                token={token}
                 cart={cart}
+                cartTotal={cartTotal}
                 order={order}
-                onCaptureCheckout={handleCaptureCheckout}
-                error={errorMessage}
+                setOrder={setOrder}
               />
             </Route>
             <Route path="/product-view/:id" exact>

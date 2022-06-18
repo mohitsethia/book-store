@@ -2,7 +2,6 @@ import React from "react";
 import { Container, Grid, Button, Typography } from "@material-ui/core";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-//import { commerce } from "../../lib/commerce";
 import { useState, useEffect } from "react";
 import "./style.css";
 

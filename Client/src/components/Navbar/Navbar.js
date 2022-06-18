@@ -2,26 +2,18 @@ import {
   AppBar,
   Badge,
   IconButton,
-  Input,
-  InputAdornment,
   Toolbar,
   Typography,
 } from "@material-ui/core";
 import { ShoppingCart } from "@material-ui/icons";
-import SearchIcon from "@material-ui/icons/Search";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/circles.png";
 import useStyles from "./styles";
-import React, { useState } from "react";
-// import Register from "../register/Register";
+import React from "react";
 
 const Navbar = ({ totalItems, login, role, setLogin, userName }) => {
   const classes = useStyles();
-  const location = useLocation();
-  const [searchTerm, setSearchTerm] = useState("");
-  console.log(role);
-  console.log(userName);
+
   return (
     <div>
       <AppBar position="fixed" className={classes.appBar} color="inherit">

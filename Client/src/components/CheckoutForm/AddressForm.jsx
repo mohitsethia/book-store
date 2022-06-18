@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import { useForm, FormProvider } from "react-hook-form";
+import { Button, Grid, Typography } from "@material-ui/core";
+import { FormProvider, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import FormInput from "./CustomTextField";
+import React from "react";
 
 const AddressForm = ({ nextStep, setShippingData }) => {
   const methods = useForm();
@@ -27,14 +20,14 @@ const AddressForm = ({ nextStep, setShippingData }) => {
           })}
         >
           <Grid container spacing={3}>
-            <FormInput required name="firstName" label="First name" />
-            <FormInput required name="lastName" label="Last name" />
-            <FormInput required name="address1" label="Address line 1" />
+            <FormInput required name="firstName" label="First Name" />
+            <FormInput required name="lastName" label="Last Name" />
+            <FormInput required name="address1" label="Address Line 1" />
             <FormInput required name="email" label="Email" />
             <FormInput required name="mobileno" label="Mobile Number" />
             <FormInput required name="city" label="City" />
             <FormInput required name="state" label="State" />
-            <FormInput required name="zip" label="Zip / Postal code" />
+            <FormInput required name="zip" label="Zip / Postal Code" />
           </Grid>
           <br />
           <div style={{ display: "flex", justifyContent: "space-between" }}>

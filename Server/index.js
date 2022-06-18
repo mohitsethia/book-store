@@ -1,12 +1,18 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
+const { connect, Schema, model } = require("mongoose");
 const authVerify = require("./auth");
 const jwt = require("jsonwebtoken");
+const { default: Stripe } = require("stripe");
 const mySecret =
   "s0gycZ/BVieolE574SbiFL6kO73VTMp3xgiML5ewkxkmYmwI16AsJaqLILJ/Nv7gQKIBeG8M/GzwXJnoquEHmKvGYs4Ksn0ixYprPONlBE+avE7h34BKS7S2LJ++fHLv9J0JNb2qP1TZdOYKx7qyOuqmueR63aF4y364rR2HTXCLoSTyxNHk9f12yNFjixdzdhF8d+sPzhDBfNuPS5wuhVGeBEqsK7xwbo6zmeCHvLcPJPH2UpzC7LlJN4dJK3kCZj7mHzzs5LhDz0tMT4XNi/1kjPNkefo5txC2EHPt14M+6UNLI1Gt31nlRPqSG7Gg7agjXwDMZS3LW3AYHe1lcA==";
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
+
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -19,7 +25,7 @@ app.use(
   })
 );
 
-mongoose.connect(
+connect(
   "mongodb://localhost:27017/myLoginRegisterDB",
   {
     useNewUrlParser: true,
@@ -30,14 +36,14 @@ mongoose.connect(
   }
 );
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   name: String,
   email: String,
   password: String,
   role: String,
 });
 
-const bookSchema = new mongoose.Schema({
+const bookSchema = new Schema({
   name: String,
   description: String,
   price: Number,
@@ -46,8 +52,32 @@ const bookSchema = new mongoose.Schema({
   category: String,
 });
 
-const User = new mongoose.model("User", userSchema);
-const Book = new mongoose.model("Book", bookSchema);
+const orderSchema = new Schema(
+  {
+    paymentId: String,
+    amount: String,
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    lineItems: [
+      {
+        book: {
+          type: Schema.Types.ObjectId,
+          ref: "Book",
+        },
+        quantity: Number,
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const User = new model("User", userSchema);
+const Book = new model("Book", bookSchema);
+const Order = new model("Order", orderSchema);
 
 //Routes
 app.post("/login", (req, res) => {
@@ -200,6 +230,51 @@ app.patch("/update/:id", (req, res) => {
       res.sendStatus(200);
     }
   });
+});
+
+app.get("/orders", (req, res) => {
+  Order.find({}, (err, orders) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(orders);
+    }
+  });
+});
+
+app.post("/checkout", async (req, res) => {
+  const { id, amount, token, lineItems } = req.body;
+
+  const userId = jwt.verify(token, mySecret).userId;
+  const user = await User.findById(userId);
+
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount,
+      currency: "INR",
+      description: `By ${user.name}`,
+      payment_method: id,
+      confirm: true,
+    });
+    if (payment.status === "succeeded") {
+      const order = new Order({
+        paymentId: payment.id,
+        amount: payment.amount ?? amount,
+        user: userId,
+        lineItems,
+      });
+      await order.save();
+      return res.status(200).json({
+        order,
+      });
+    } else {
+      return res.status(500).json({
+        message: "Payment failed",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.listen(9002, () => {
