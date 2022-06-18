@@ -26,14 +26,20 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MyOrders({ login, role, _id }) {
+export default function MyOrders({ token, login, role }) {
   const classes = useStyles();
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     if (login && role === "CUSTOMER") {
-      axios.get("http://127.0.0.1:9002/orders").then((res) => {
-        setOrders(res.data);
+      fetch(`http://127.0.0.1:9002/orders/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => {
+        res.json().then((data) => {
+          setOrders(data);
+        });
       });
     }
   }, []);

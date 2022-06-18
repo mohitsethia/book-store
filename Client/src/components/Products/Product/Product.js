@@ -12,10 +12,10 @@ import { AddShoppingCart } from "@material-ui/icons";
 import { Link, useHistory } from "react-router-dom";
 import useStyles from "./styles";
 
-const Product = ({ product, onAddToCart,login }) => {
-  const history= useHistory();
-  console.log({ product });
+const Product = ({ product, onAddToCart, login, role }) => {
+  const history = useHistory();
   const classes = useStyles();
+
   return (
     <Card className={classes.root}>
       <Link to={`product-view/${product._id}`}>
@@ -36,17 +36,20 @@ const Product = ({ product, onAddToCart,login }) => {
         </div>
       </CardContent>
 
-        <CardActions disableSpacing className={classes.cardActions}>
-          <Button
-            variant="contained"
-            className={classes.button}
-            endIcon={<AddShoppingCart />}
-            onClick={login?() => onAddToCart(product._id):()=>history.push("/login")}
-          >
-            <b>ADD TO CART</b>
-          </Button>
-        </CardActions>
-      
+      <CardActions disableSpacing className={classes.cardActions}>
+        <Button
+          variant="contained"
+          className={classes.button}
+          endIcon={<AddShoppingCart />}
+          onClick={
+            login && role === "CUSTOMER"
+              ? () => onAddToCart(product._id)
+              : () => history.push("/login")
+          }
+        >
+          <b>ADD TO CART</b>
+        </Button>
+      </CardActions>
     </Card>
   );
 };

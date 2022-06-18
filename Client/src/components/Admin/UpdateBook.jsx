@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./style.css";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
+import { categories } from "../Products/Products";
 
 const UpdateBook = ({ setProducts }) => {
   const { id } = useParams();
@@ -18,7 +19,7 @@ const UpdateBook = ({ setProducts }) => {
   useEffect(() => {
     async function getBook() {
       try {
-        const book = await axios.get(`http://localhost:9002/books/${id}`);
+        const book = await axios.get(`http://127.0.0.1:9002/books/${id}`);
         console.log(book.data);
         setBook(book.data);
       } catch (error) {
@@ -38,7 +39,7 @@ const UpdateBook = ({ setProducts }) => {
   async function onFormSubmit(e) {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:9002/update/${id}`, book);
+      await axios.patch(`http://127.0.0.1:9002/books/update/${id}`, book);
       history.push("/");
     } catch (error) {
       console.log("Something is Wrong");
@@ -58,13 +59,25 @@ const UpdateBook = ({ setProducts }) => {
         placeholder="Book Name"
         onChange={(e) => onTextFieldChange(e)}
       ></input>
-      <input
-        type="text"
+      <select
         name="category"
+        id="category"
         value={book.category}
-        placeholder="Book Category"
-        onChange={(e) => onTextFieldChange(e)}
-      ></input>
+        onChange={onTextFieldChange}
+        required
+      >
+        <option value="none" selected disabled hidden>
+          Select a Category
+        </option>
+        {categories.map(
+          (category) =>
+            category !== "all" && (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            )
+        )}
+      </select>
       <input
         type="text"
         name="description"

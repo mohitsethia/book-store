@@ -31,11 +31,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Getbooks({ login, role,setProducts }) {
+export default function Getbooks({ login, role, setProducts }) {
   const classes = useStyles();
   const [books, setBooks] = useState([]);
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:9002/delete/${id}`);
+    await axios.delete(`http://127.0.0.1:9002/books/delete/${id}`);
     var newbook = books.filter((item) => {
       return item._id !== id;
     });
@@ -46,7 +46,7 @@ export default function Getbooks({ login, role,setProducts }) {
 
   useEffect(() => {
     if (login && role === "ADMIN") {
-      axios.get("http://localhost:9002/books").then((res) => {
+      axios.get("http://127.0.0.1:9002/books").then((res) => {
         setBooks(res.data);
       });
     }

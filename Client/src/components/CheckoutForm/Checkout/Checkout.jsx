@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 
 const steps = ["Shipping address", "Payment Details"];
 
-const Checkout = ({ token, cartTotal, order, setOrder, cart }) => {
+const Checkout = ({ clearCart, token, cartTotal, order, setOrder, cart }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [shippingData, setShippingData] = useState({});
   const classes = useStyles();
@@ -28,10 +28,10 @@ const Checkout = ({ token, cartTotal, order, setOrder, cart }) => {
     <>
       <div>
         <Typography variant="h5">
-          Thank you for your purchase, {shippingData.firstname}!
+          Thank you for your purchase, {shippingData.firstName}!
         </Typography>
         <Divider className={classes.divider} />
-        <Typography variant="subtitle2">Order ref: {order.id}</Typography>
+        <Typography variant="subtitle2">Order ref: {order._id}</Typography>
       </div>
       <br />
       <Button component={Link} variant="outlined" type="button" to="/">
@@ -45,6 +45,7 @@ const Checkout = ({ token, cartTotal, order, setOrder, cart }) => {
       <AddressForm nextStep={nextStep} setShippingData={setShippingData} />
     ) : (
       <PaymentForm
+        clearCart={clearCart}
         nextStep={nextStep}
         backStep={backStep}
         shippingData={shippingData}

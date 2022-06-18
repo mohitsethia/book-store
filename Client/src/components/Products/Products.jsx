@@ -10,10 +10,21 @@ import logo3 from "../../assets/3.jpeg";
 import { Link } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 
-const Products = ({ products, onAddToCart }) => {
+export const categories = [
+  "all",
+  "horror",
+  "fiction",
+  "kids",
+  "motivation",
+  "article",
+  "novel",
+  "scientific",
+];
+
+const Products = ({ products, onAddToCart, login, role }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState("all");
 
   function handleScroll() {
     window.scroll({
@@ -23,7 +34,7 @@ const Products = ({ products, onAddToCart }) => {
     });
   }
   const filteredProducts = useMemo(() => {
-    if (searchTerm === "" && category === "All") {
+    if (searchTerm === "" && category === "all") {
       return products;
     } else if (searchTerm !== "") {
       return products.filter((product) =>
@@ -103,63 +114,28 @@ const Products = ({ products, onAddToCart }) => {
       <div className="menu-tabs container">
         <div className="menu-tab d-flex justify-content-around">
           <Stack spacing={2} direction="row">
-            <Button
-              className={classes.allbtn}
-              variant="text"
-              onClick={() => setCategory("All")}
-            >
-              All
-            </Button>
-            <Button
-              className={classes.btn}
-              variant="contained"
-              onClick={() => setCategory("Fiction")}
-            >
-              Fiction
-            </Button>
-            <Button
-              className={classes.btn}
-              variant="contained"
-              onClick={() => setCategory("Kids")}
-            >
-              Kids
-            </Button>
-            <Button
-              className={classes.btn}
-              variant="contained"
-              onClick={() => setCategory("Motivation")}
-            >
-              Motivation
-            </Button>
-            <Button
-              className={classes.btn}
-              variant="contained"
-              onClick={() => setCategory("Article")}
-            >
-              Article
-            </Button>
-            <Button
-              className={classes.btn}
-              variant="contained"
-              onClick={() => setCategory("Novel")}
-            >
-              Novel
-            </Button>
-            <Button
-              className={classes.btn}
-              variant="contained"
-              onClick={() => setCategory("Scientific")}
-            >
-              Scientific
-            </Button>
+            {categories.map((category) => (
+              <Button
+                className={category === "all" ? classes.allbtn : classes.btn}
+                variant={category === "all" ? "text" : "contained"}
+                onClick={() => setCategory(category)}
+              >
+                {category}
+              </Button>
+            ))}
           </Stack>
         </div>
       </div>
 
       <Grid className={classes.content} container justify="center" spacing={5}>
-        {filteredProducts.map((product) => (
+        {filteredProducts?.map((product) => (
           <Grid item key={product._id} xs={12} sm={6} md={4} lg={3} id="pro">
-            <Product product={product} onAddToCart={onAddToCart} />
+            <Product
+              product={product}
+              onAddToCart={onAddToCart}
+              login={login}
+              role={role}
+            />
           </Grid>
         ))}
       </Grid>
