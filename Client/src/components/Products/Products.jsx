@@ -4,17 +4,14 @@ import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
 import useStyles from "./styles";
 import Carousel from "react-bootstrap/Carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import logo1 from "../../assets/2.jpeg";
 import logo2 from "../../assets/4.jpeg";
 import logo3 from "../../assets/3.jpeg";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import Stack from "@mui/material/Stack";
+
 const Products = ({ products, onAddToCart }) => {
   const classes = useStyles();
-  const [error, setError] = useState("");
-  const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("All");
 
@@ -25,7 +22,6 @@ const Products = ({ products, onAddToCart }) => {
       behavior: "smooth",
     });
   }
-  console.log(products);
   const filteredProducts = useMemo(() => {
     if (searchTerm === "" && category === "All") {
       return products;

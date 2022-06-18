@@ -3,7 +3,7 @@ import "./login.css";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-const Login = ({ login, setLogin,setRole,setUserName }) => {
+const Login = ({ login, setLogin, setRole, setUserName }) => {
   const [error, setError] = useState("");
   const history = useHistory();
   console.log(history);
@@ -22,24 +22,22 @@ const Login = ({ login, setLogin,setRole,setUserName }) => {
 
   const loginhandler = async () => {
     try {
-      const response = await axios.post("http://localhost:9002/login", user);
+      const response = await axios.post("http://127.0.0.1:9002/login", user);
       setLogin(true);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("userName", response.data.name);
-      setRole(localStorage.getItem("role"))
-      setUserName(response.data.name)
-      if(response.data.role==="ADMIN") {
+      setRole(localStorage.getItem("role"));
+      setUserName(response.data.name);
+      if (response.data.role === "ADMIN") {
         history.push("/Admin");
       } else {
         history.push("/");
       }
       console.log(response.data.name);
-
     } catch (error) {
       setError(error?.response.data?.message);
       console.log(error);
-      
     }
   };
 
