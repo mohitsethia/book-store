@@ -22,7 +22,7 @@ const BookView = () => {
   useEffect(() => {
     async function getBook() {
       try {
-        const book = await axios.get(`http://localhost:9002/books/${id}`);
+        const book = await axios.get(`http://127.0.0.1:9002/books/${id}`);
         console.log(book.data);
         setBook(book.data);
       } catch (error) {

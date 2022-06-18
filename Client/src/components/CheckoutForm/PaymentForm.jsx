@@ -13,8 +13,7 @@ const PUBLIC_KEY =
 
 const stripeTestToPromise = loadStripe(PUBLIC_KEY);
 
-const Form = ({ cartTotal, nextStep, setOrder, cart, token }) => {
-  console.log(cartTotal);
+const Form = ({ clearCart, cartTotal, nextStep, setOrder, cart, token }) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -41,8 +40,9 @@ const Form = ({ cartTotal, nextStep, setOrder, cart, token }) => {
           })),
         }),
       });
-      const data = await res.json();
-      setOrder({ data });
+      const { order } = await res.json();
+      setOrder(order);
+      clearCart();
       nextStep();
     }
   }
@@ -69,10 +69,12 @@ export default function PaymentForm({
   cartTotal,
   cart,
   token,
+  clearCart,
 }) {
   return (
     <Elements stripe={stripeTestToPromise}>
       <Form
+        clearCart={clearCart}
         cart={cart}
         token={token}
         cartTotal={cartTotal}

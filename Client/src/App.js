@@ -28,11 +28,13 @@ const App = ({ setLoginUser }) => {
   const [cart, setCart] = useState(
     JSON.parse(localStorage.getItem("cart")) ?? []
   );
-  const cartTotal = useMemo(() => {
-    return cart.length
-      ? cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
-      : 1000;
-  }, [cart]);
+  const cartTotal = useMemo(
+    () =>
+      cart.length
+        ? cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        : 0,
+    [cart]
+  );
   const [order, setOrder] = useState({});
   const [login, setLogin] = useState(
     localStorage.getItem("token") ? true : false
@@ -41,7 +43,7 @@ const App = ({ setLoginUser }) => {
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
   const [role, setRole] = useState(localStorage.getItem("role"));
   const fetchProducts = async () => {
-    const { data } = await axios.get("http://localhost:9002/books");
+    const { data } = await axios.get("http://127.0.0.1:9002/books");
 
     setProducts(data);
   };
@@ -105,9 +107,6 @@ const App = ({ setLoginUser }) => {
     fetchProducts();
   }, []);
 
-  console.log("role: ", { role }, " username: ", { userName }, " another ", {
-    setUserName,
-  });
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
@@ -129,11 +128,13 @@ const App = ({ setLoginUser }) => {
                 products={products}
                 onAddToCart={handleCart}
                 login={login}
+                role={role}
               />
             </Route>
             <Route exact path="/login">
               <Login
                 login={login}
+                setToken={setToken}
                 setLogin={setLogin}
                 setRole={setRole}
                 setUserName={setUserName}
@@ -156,6 +157,7 @@ const App = ({ setLoginUser }) => {
                 cartTotal={cartTotal}
                 order={order}
                 setOrder={setOrder}
+                clearCart={handleEmptyCart}
               />
             </Route>
             <Route path="/product-view/:id" exact>
@@ -177,7 +179,7 @@ const App = ({ setLoginUser }) => {
               <ViewOrders login={login} role={role} />
             </Route>
             <Route path="/myorders" exact>
-              <MyOrders login={login} role={role} />
+              <MyOrders login={login} role={role} token={token} />
             </Route>
 
             <Route path="/Admin" exact>

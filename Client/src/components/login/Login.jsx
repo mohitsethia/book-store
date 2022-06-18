@@ -3,7 +3,7 @@ import "./login.css";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-const Login = ({ login, setLogin, setRole, setUserName }) => {
+const Login = ({ setToken, setLogin, setRole, setUserName }) => {
   const [error, setError] = useState("");
   const history = useHistory();
   console.log(history);
@@ -27,6 +27,7 @@ const Login = ({ login, setLogin, setRole, setUserName }) => {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("userName", response.data.name);
+      setToken(localStorage.getItem("token"));
       setRole(localStorage.getItem("role"));
       setUserName(response.data.name);
       if (response.data.role === "ADMIN") {
