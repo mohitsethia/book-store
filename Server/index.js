@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const morgan = require("morgan");
 
 const connectDB = require("./lib/mongodb");
 const { IS_PROD, PORT, NODE_ENV, CORS_ORIGINS } = require("./utils/constants");
@@ -24,7 +23,6 @@ connectDB().then(() => {
       ],
     })
   );
-  if (!IS_PROD) app.use(morgan("dev"));
 
   // Routes
   app.use("/auth", require("./routes/auth.routes"));
