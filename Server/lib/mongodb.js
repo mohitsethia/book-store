@@ -3,7 +3,7 @@ const { MONGO_URI } = require("../utils/constants");
 
 async function connectDB() {
   try {
-    const conn = await connect(MONGO_URI, {
+    const conn = await connect("mongodb://localhost:27017/myLoginRegisterDB", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
