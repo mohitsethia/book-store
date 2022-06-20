@@ -1,36 +1,38 @@
 const router = require("express").Router();
 
-const User = require("../models/User.model");
 const Order = require("../models/Order.model");
 const stripe = require("../lib/stripe");
-const { decodeJWT } = require("../lib/jwt");
+const { isLoggedIn, isAdmin } = require("../middleware/auth");
 
-router.get("/", async (req, res) => {
-  const allOrders = await Order.find().populate("user").lean();
-  res.json(allOrders);
-});
-
-router.get("/me", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const decoded = decodeJWT(token);
-
-  const allOrders = await Order.find({
-    user: decoded?.userId,
-  });
-  res.json(allOrders);
-});
-
-router.post("/checkout", async (req, res) => {
-  const { id, amount, token, lineItems } = req.body;
-
-  const decoded = decodeJWT(token);
-  const user = await User.findById(decoded?.userId);
-
+router.get("/", isLoggedIn, isAdmin, async (req, res) => {
   try {
+    const allOrders = await Order.find().populate("user").lean();
+    res.json(allOrders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/me", isLoggedIn, async (req, res) => {
+  try {
+    const allOrders = await Order.find({
+      user: req.user._id,
+    });
+    res.json(allOrders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/checkout", isLoggedIn, async (req, res) => {
+  try {
+    const { id, amount, lineItems } = req.body;
     const payment = await stripe.paymentIntents.create({
       amount: amount * 100,
       currency: "INR",
-      description: `By ${user.name}`,
+      description: `By ${req.user.name}`,
       payment_method: id,
       confirm: true,
     });
@@ -42,16 +44,17 @@ router.post("/checkout", async (req, res) => {
         lineItems,
       });
       await order.save();
-      return res.status(200).json({
-        order,
-      });
+      return res.status(201).json(order);
     } else {
       return res.status(500).json({
-        message: "Payment failed",
+        message: "Payment not successful",
       });
     }
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Payment failed",
+    });
   }
 });
 

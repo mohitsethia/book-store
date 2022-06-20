@@ -11,8 +11,9 @@ import {
 } from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
 import { TableBody } from "@mui/material";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import axios from "../../lib/axios";
 
 const useStyles = makeStyles({
   stuListColor: {
@@ -26,17 +27,24 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ViewOrders({ login, role }) {
+export default function ViewOrders({ login, role, token }) {
   const classes = useStyles();
+  const { push } = useHistory();
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    if (login && role === "ADMIN") {
-      fetch(`http://127.0.0.1:9002/orders`).then((res) => {
-        res.json().then((data) => {
-          setOrders(data);
+    if (!login || role !== "ADMIN") {
+      push("/");
+    } else {
+      async function getOrders() {
+        const res = await axios(`/orders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-      });
+        setOrders(res.data);
+      }
+      getOrders();
     }
   }, []);
 
@@ -78,7 +86,9 @@ export default function ViewOrders({ login, role }) {
                   <TableCell align="center">{order.amount}</TableCell>
                   <TableCell align="center">{order._id}</TableCell>
                   <TableCell align="center">{order.paymentId}</TableCell>
-                  <TableCell align="center">{order.createdAt}</TableCell>
+                  <TableCell align="center">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -14,8 +14,8 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { indigo } from "@material-ui/core/colors";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import axios from "../../lib/axios";
+import { Link, useHistory } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -31,24 +31,33 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Getbooks({ login, role, setProducts }) {
+export default function Getbooks({ login, role, token }) {
   const classes = useStyles();
+  const { push } = useHistory();
   const [books, setBooks] = useState([]);
+
   const handleDelete = async (id) => {
-    await axios.delete(`http://127.0.0.1:9002/books/delete/${id}`);
-    var newbook = books.filter((item) => {
-      return item._id !== id;
+    await axios.delete(`/books/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    console.log(newbook);
-    setBooks(newbook);
-    setProducts(newbook);
+    setBooks((books) => books.filter((item) => item._id !== id));
   };
 
   useEffect(() => {
-    if (login && role === "ADMIN") {
-      axios.get("http://127.0.0.1:9002/books").then((res) => {
+    if (!login || role !== "ADMIN") {
+      push("/");
+    } else {
+      async function getBooks() {
+        const res = await axios("/books", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setBooks(res.data);
-      });
+      }
+      getBooks();
     }
   }, []);
 
@@ -92,9 +101,7 @@ export default function Getbooks({ login, role, setProducts }) {
                   <TableCell align="center">{book.category}</TableCell>
                   <TableCell align="center">
                     <Tooltip title="Update">
-                      <IconButton
-                      // LinkComponent={Link} to={`/update/${_id}`}
-                      >
+                      <IconButton>
                         <Link to={`/update/${book._id}`}>
                           <EditIcon />
                         </Link>

@@ -6,12 +6,11 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import axios from "../../lib/axios";
 import React from "react";
+import { STRIPE_PUBLIC_KEY } from "../../utils/constants";
 
-const PUBLIC_KEY =
-  "pk_test_51LCdt0SFPunBGkuYGtBdv9rznRPpyA544MggcXjeWzJ1GrTlc7ok909NAnSafZSuwgfCFpIbojFUGo3Xah9FBiPV00FFO5vIKO";
-
-const stripeTestToPromise = loadStripe(PUBLIC_KEY);
+const stripeTestToPromise = loadStripe(STRIPE_PUBLIC_KEY);
 
 const Form = ({ clearCart, cartTotal, nextStep, setOrder, cart, token }) => {
   const stripe = useStripe();
@@ -25,23 +24,23 @@ const Form = ({ clearCart, cartTotal, nextStep, setOrder, cart, token }) => {
     });
     if (!error) {
       const { id } = paymentMethod;
-      const res = await fetch("http://127.0.0.1:9002/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await axios.post(
+        "/orders/checkout",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-        body: JSON.stringify({
+        {
           id,
-          token,
           amount: cartTotal,
           lineItems: cart.map((book) => ({
             book: book._id,
             quantity: book.quantity,
           })),
-        }),
-      });
-      const { order } = await res.json();
-      setOrder(order);
+        }
+      );
+      setOrder(res.data);
       clearCart();
       nextStep();
     }

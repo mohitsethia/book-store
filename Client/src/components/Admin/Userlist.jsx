@@ -10,11 +10,10 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  Tooltip,
 } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
-import axios from "axios";
+import axios from "../../lib/axios";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   stuListColor: {
@@ -28,15 +27,25 @@ const useStyles = makeStyles({
   },
 });
 
-export default function AdminPage({ login, role }) {
+export default function AdminPage({ login, role, token }) {
   const classes = useStyles();
+  const { push } = useHistory();
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    if (login && role === "ADMIN") {
-      axios.get("http://127.0.0.1:9002/users").then((res) => {
+    if (!login || role !== "ADMIN") {
+      push("/");
+    } else {
+      async function getUsers() {
+        const res = await axios("/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         setUsers(res.data);
-      });
+      }
+      getUsers();
     }
   }, []);
 

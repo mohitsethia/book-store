@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import "./login.css";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { useHistory } from "react-router-dom";
 
 const Login = ({ setToken, setLogin, setRole, setUserName }) => {
   const [error, setError] = useState("");
-  const history = useHistory();
-  console.log(history);
+  const { push } = useHistory();
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -22,7 +21,7 @@ const Login = ({ setToken, setLogin, setRole, setUserName }) => {
 
   const loginhandler = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:9002/auth/login", user);
+      const response = await axios.post("/auth/login", user);
       setLogin(true);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
@@ -31,14 +30,13 @@ const Login = ({ setToken, setLogin, setRole, setUserName }) => {
       setRole(localStorage.getItem("role"));
       setUserName(response.data.name);
       if (response.data.role === "ADMIN") {
-        history.push("/Admin");
+        push("/Admin");
       } else {
-        history.push("/");
+        push("/");
       }
       console.log(response.data.name);
     } catch (error) {
-      setError(error?.response.data?.message);
-      console.log(error);
+      setError(error?.message);
     }
   };
 
@@ -64,7 +62,12 @@ const Login = ({ setToken, setLogin, setRole, setUserName }) => {
         Login
       </div>
       <div>or</div>
-      <div className="button" onClick={() => history.push("/register")}>
+      <div
+        className="button"
+        onClick={() => {
+          push("/register");
+        }}
+      >
         Register
       </div>
     </div>
