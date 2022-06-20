@@ -27,17 +27,17 @@ const Form = ({ clearCart, cartTotal, nextStep, setOrder, cart, token }) => {
       const res = await axios.post(
         "/orders/checkout",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-        {
           id,
           amount: cartTotal,
           lineItems: cart.map((book) => ({
             book: book._id,
             quantity: book.quantity,
           })),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       setOrder(res.data);
