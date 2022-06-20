@@ -33,7 +33,7 @@ const Register = () => {
         password === reEnterPassword
       ) {
         const response = await axios.post(
-          "http://127.0.0.1:9002/register",
+          "http://127.0.0.1:9002/auth/register",
           user
         );
         console.log(response);

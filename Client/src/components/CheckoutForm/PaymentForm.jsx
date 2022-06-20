@@ -9,7 +9,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import React from "react";
 
 const PUBLIC_KEY =
-  "pk_test_51J4t0XSCWKVouCVUCY7gtuxPn568hLqW6TrHXpgWzSrHrpcuwasejweepDw5Seie0MVn2zugCaC3ZxhKVPC2IJm700MJOeCe95";
+  "pk_test_51LCdt0SFPunBGkuYGtBdv9rznRPpyA544MggcXjeWzJ1GrTlc7ok909NAnSafZSuwgfCFpIbojFUGo3Xah9FBiPV00FFO5vIKO";
 
 const stripeTestToPromise = loadStripe(PUBLIC_KEY);
 

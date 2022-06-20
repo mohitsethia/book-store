@@ -22,7 +22,7 @@ const Login = ({ setToken, setLogin, setRole, setUserName }) => {
 
   const loginhandler = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:9002/login", user);
+      const response = await axios.post("http://127.0.0.1:9002/auth/login", user);
       setLogin(true);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);
