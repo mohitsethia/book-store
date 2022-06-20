@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Grid, Button, Typography } from "@material-ui/core";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { useState, useEffect } from "react";
 import "./style.css";
 
@@ -19,18 +19,15 @@ const BookView = () => {
     media: "",
     category: "",
   });
+
   useEffect(() => {
     async function getBook() {
-      try {
-        const book = await axios.get(`http://127.0.0.1:9002/books/${id}`);
-        console.log(book.data);
-        setBook(book.data);
-      } catch (error) {
-        console.log("Something is Wrong");
-      }
+      const book = await axios(`/books/${id}`);
+      setBook(book.data);
     }
     getBook();
   }, [id]);
+
   return (
     <Container className="product-view">
       <Grid container>

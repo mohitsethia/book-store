@@ -1,9 +1,8 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { CssBaseline } from "@material-ui/core";
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AddBook from "./components/Admin/AddBook";
 import Dashboard from "./components/Admin/Dashboard";
@@ -22,8 +21,8 @@ import ProductView from "./components/ProductView/ProductView";
 import Register from "./components/register/Register";
 import MyOrders from "./components/UserOrders/MyOrders";
 
-const App = ({ setLoginUser }) => {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+const App = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState(
     JSON.parse(localStorage.getItem("cart")) ?? []
@@ -42,11 +41,6 @@ const App = ({ setLoginUser }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
   const [role, setRole] = useState(localStorage.getItem("role"));
-  const fetchProducts = async () => {
-    const { data } = await axios.get("http://127.0.0.1:9002/books");
-
-    setProducts(data);
-  };
 
   const handleCart = async (productId, operation = "Add") => {
     if (operation === "Remove") {
@@ -103,10 +97,6 @@ const App = ({ setLoginUser }) => {
     localStorage.removeItem("cart");
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
@@ -125,6 +115,7 @@ const App = ({ setLoginUser }) => {
           <Switch>
             <Route exact path="/">
               <Products
+                setProducts={setProducts}
                 products={products}
                 onAddToCart={handleCart}
                 login={login}
@@ -164,19 +155,19 @@ const App = ({ setLoginUser }) => {
               <ProductView />
             </Route>
             <Route path="/Userlist" exact>
-              <Userlist login={login} role={role} />
+              <Userlist login={login} role={role} token={token} />
             </Route>
             <Route path="/AddBook" exact>
-              <AddBook setProducts={setProducts} />
+              <AddBook login={login} role={role} token={token} />
             </Route>
             <Route path="/update/:id" exact>
-              <UpdateBook login={login} role={role} />
+              <UpdateBook login={login} role={role} token={token} />
             </Route>
             <Route path="/getbooks" exact>
-              <Getbooks login={login} role={role} setProducts={setProducts} />
+              <Getbooks login={login} role={role} token={token} />
             </Route>
             <Route path="/vieworders" exact>
-              <ViewOrders login={login} role={role} />
+              <ViewOrders login={login} role={role} token={token} />
             </Route>
             <Route path="/myorders" exact>
               <MyOrders login={login} role={role} token={token} />

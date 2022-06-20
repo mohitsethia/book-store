@@ -7,7 +7,6 @@ import useStyles from "./styles";
 
 const Cart = ({ cart, handleCart, onEmptyCart }) => {
   const classes = useStyles();
-  console.log({ cart });
 
   const renderEmptyCart = () => (
     <Typography variant="subtitle1">

@@ -3,7 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 
 const connectDB = require("./lib/mongodb");
-const { IS_PROD, PORT, NODE_ENV } = require("./utils/constants");
+const { IS_PROD, PORT, NODE_ENV, CORS_ORIGINS } = require("./utils/constants");
 
 connectDB().then(() => {
   const app = express();
@@ -17,7 +17,11 @@ connectDB().then(() => {
   );
   app.use(
     cors({
-      origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+      origin: [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        ...CORS_ORIGINS.split(","),
+      ],
     })
   );
   if (!IS_PROD) app.use(morgan("dev"));

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./register.css";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { useHistory } from "react-router-dom";
 
 const Register = () => {
@@ -24,19 +24,14 @@ const Register = () => {
 
   const register = async () => {
     try {
-      const { name, email, password, reEnterPassword, librarian } = user;
-      console.log(user);
+      const { name, email, password, reEnterPassword } = user;
       if (
         name &&
         email &&
         password.length > 8 &&
         password === reEnterPassword
       ) {
-        const response = await axios.post(
-          "http://127.0.0.1:9002/register",
-          user
-        );
-        console.log(response);
+        const response = await axios.post("/auth/register", user);
         alert(response.data.message);
         history.push("/login");
       } else if (password.length < 8) {
@@ -45,7 +40,7 @@ const Register = () => {
         alert("invalid input");
       }
     } catch (error) {
-      setError(error?.response.data?.message);
+      setError(error?.message);
     }
   };
 

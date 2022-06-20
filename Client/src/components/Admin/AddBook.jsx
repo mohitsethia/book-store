@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "./style.css";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { useHistory } from "react-router-dom";
 import { categories } from "../Products/Products";
 
-const AddBook = ({ setProducts }) => {
-  const history = useHistory();
+const AddBook = ({ login, role, token }) => {
+  const { push } = useHistory();
   const [error, setError] = useState("");
   const [book, setBook] = useState({
     name: "",
@@ -15,6 +15,7 @@ const AddBook = ({ setProducts }) => {
     media: "",
     category: "",
   });
+
   const handle = (e) => {
     const { name, value } = e.target;
     setBook({
@@ -24,19 +25,25 @@ const AddBook = ({ setProducts }) => {
   };
 
   const addbook = async () => {
-    try {
-      const { name, description, price, author, media, category } = book;
-      if (name && description && price && author && media && category) {
-        const response = await axios.post("http://127.0.0.1:9002/books", book);
-        console.log(response);
-        setProducts((product) => [...product, response.data.book]);
-        alert(response.data.message);
-        history.push("/getbooks");
-      } else {
-        alert("invalid input");
+    if (!login || role !== "ADMIN") {
+      push("/");
+    } else {
+      try {
+        const { name, description, price, author, media, category } = book;
+        if (name && description && price && author && media && category) {
+          const response = await axios.post("/books", book, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          alert(response.data.name);
+          push("/getbooks");
+        } else {
+          alert("invalid input");
+        }
+      } catch (error) {
+        setError(error.message);
       }
-    } catch (error) {
-      setError(error.response.data.message);
     }
   };
 

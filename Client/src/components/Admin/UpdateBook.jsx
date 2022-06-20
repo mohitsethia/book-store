@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./style.css";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { useHistory, useParams } from "react-router-dom";
 import { categories } from "../Products/Products";
 
-const UpdateBook = ({ setProducts }) => {
+const UpdateBook = ({ login, role, token }) => {
   const { id } = useParams();
-  const history = useHistory();
+  const { push } = useHistory();
   const [error, setError] = useState("");
   const [book, setBook] = useState({
     name: "",
@@ -16,17 +16,21 @@ const UpdateBook = ({ setProducts }) => {
     media: "",
     category: "",
   });
+
   useEffect(() => {
-    async function getBook() {
-      try {
-        const book = await axios.get(`http://127.0.0.1:9002/books/${id}`);
-        console.log(book.data);
-        setBook(book.data);
-      } catch (error) {
-        console.log("Something is Wrong");
+    if (!login || role !== "ADMIN") {
+      push("/");
+    } else {
+      async function getBook() {
+        try {
+          const res = await axios(`/books/${id}`);
+          setBook(res.data);
+        } catch (error) {
+          setError(error.message);
+        }
       }
+      getBook();
     }
-    getBook();
   }, [id]);
 
   function onTextFieldChange(e) {
@@ -39,18 +43,20 @@ const UpdateBook = ({ setProducts }) => {
   async function onFormSubmit(e) {
     e.preventDefault();
     try {
-      await axios.patch(`http://127.0.0.1:9002/books/update/${id}`, book);
-      history.push("/");
+      const res = await axios.patch(`/books/update/${id}`, book, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setBook(res.data);
+      push("/");
     } catch (error) {
       console.log("Something is Wrong");
     }
   }
-  function handleClick() {
-    history.push("/");
-  }
+
   return (
     <div className="register">
-      {/* {console.log("Book", book)} */}
       <h1>Update Book</h1>
       <input
         type="text"

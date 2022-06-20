@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ShoppingCart } from "@material-ui/icons";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logo from "../../assets/circles.png";
 import useStyles from "./styles";
 import React from "react";

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Grid, InputAdornment, Input, Button } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
@@ -9,6 +9,7 @@ import logo2 from "../../assets/4.jpeg";
 import logo3 from "../../assets/3.jpeg";
 import { Link } from "react-router-dom";
 import Stack from "@mui/material/Stack";
+import axios from "../../lib/axios";
 
 export const categories = [
   "all",
@@ -21,10 +22,18 @@ export const categories = [
   "scientific",
 ];
 
-const Products = ({ products, onAddToCart, login, role }) => {
+const Products = ({ setProducts, products, onAddToCart, login, role }) => {
   const classes = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await axios("/books");
+      setProducts(res.data);
+    };
+    fetchProducts();
+  }, []);
 
   function handleScroll() {
     window.scroll({
@@ -33,6 +42,7 @@ const Products = ({ products, onAddToCart, login, role }) => {
       behavior: "smooth",
     });
   }
+
   const filteredProducts = useMemo(() => {
     if (searchTerm === "" && category === "all") {
       return products;

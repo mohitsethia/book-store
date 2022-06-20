@@ -1,56 +1,67 @@
 const router = require("express").Router();
 
+const { isLoggedIn, isAdmin } = require("../middleware/auth");
 const Book = require("../models/Book.model");
 
 router.get("/", async (req, res) => {
-  const allBooks = await Book.find();
-  res.json(allBooks);
+  try {
+    const allBooks = await Book.find();
+    res.json(allBooks);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 router.get("/:id", async (req, res) => {
-  const book = await Book.findById(req.params.id);
-  res.json(book);
+  try {
+    const book = await Book.findById(req.params.id);
+    res.json(book);
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: "Book not found" });
+  }
 });
 
-router.post("/", async (req, res) => {
-  const { name, description, price, author, media, category } = req.body;
-  const book = new Book({
-    name,
-    description,
-    price,
-    author,
-    media,
-    category,
-  });
-  await book.save();
-  res.json(book);
+router.post("/", isLoggedIn, isAdmin, async (req, res) => {
+  try {
+    const book = new Book({
+      ...req.body,
+    });
+    await book.save();
+    res.status(201).json(book);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error when creating book",
+    });
+  }
 });
 
-router.post("/getBooksByCategory", async (req, res) => {
-  const category = req.body.category;
-  const book = await Book.find({ category });
-  res.json(book);
+router.delete("/delete/:id", isLoggedIn, isAdmin, async (req, res) => {
+  try {
+    const book = await Book.findByIdAndDelete(req.params?.id);
+    res.json(book);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error deleting book",
+    });
+  }
 });
 
-router.delete("/delete/:id", async (req, res) => {
-  const book = await Book.findByIdAndDelete(req.params.id);
-  res.json(book);
-});
-
-router.patch("/update/:id", async (req, res) => {
-  const { name, description, price, author, media, category } = req.body;
-  const book = {
-    name,
-    description,
-    price,
-    author,
-    media,
-    category,
-  };
-  const updatedBook = await Book.findByIdAndUpdate(req.params.id, book, {
-    new: true,
-  });
-  res.json(updatedBook);
+router.patch("/update/:id", isLoggedIn, isAdmin, async (req, res) => {
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(req.params?.id, req.body, {
+      new: true,
+    });
+    res.json(updatedBook);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error updating book",
+    });
+  }
 });
 
 module.exports = router;
