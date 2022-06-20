@@ -23,7 +23,6 @@ connectDB().then(() => {
       ],
     })
   );
-  if (!IS_PROD) app.use(require("morgan")("dev"));
 
   // Routes
   app.use("/auth", require("./routes/auth.routes"));
