@@ -40,7 +40,7 @@ router.post("/checkout", isLoggedIn, async (req, res) => {
       const order = new Order({
         paymentId: payment.id,
         amount: amount.toString(),
-        user: decoded?.userId,
+        user: req.user._id,
         lineItems,
       });
       await order.save();
