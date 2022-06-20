@@ -22,25 +22,29 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
-  const user = User.findOne({ email });
-  if (user) {
-    res.status(409).send({ message: "User already registered" });
-  } else if (password.length < 8) {
-    res
-      .status(409)
-      .send({ message: "make sure the of the password is greater than 8" });
-  } else {
-    const user = new User({
-      name,
-      email,
-      password,
-      role: email === "rajayush125@gmail.com" ? "ADMIN" : "CUSTOMER",
-    });
-    await user.save();
-    res.status(201).send({ message: "User registered successfully", user });
-  }
+router.post("/register", (req, res) => {
+  const { name, email, password, librarian } = req.body;
+  User.findOne({ email: email }, (err, user) => {
+    if (user) {
+      res.status(409).send({ message: "User already registered" });
+    } else if(password.length <= 8){
+      res.status(409).send({ message: "make sure the of the pssword is greater than 8" });
+    } else {
+      const user = new User({
+        name,
+        email,
+        password,
+        role: email === "rajayush125@gmail.com" ? "ADMIN" : "CUSTOMER",
+      });
+      user.save((err) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send({ message: "Successfully Registered, Please login now." });
+        }
+      });
+    }
+  });
 });
 
 module.exports = router;
